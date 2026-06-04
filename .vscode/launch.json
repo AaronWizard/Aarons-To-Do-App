@@ -1,0 +1,18 @@
+{
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "C#: AaronsToDoApp.API [http]",
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/AaronsToDoApp.API/AaronsToDoApp.API.csproj",
+            "launchConfigurationId": "TargetFramework=;http",
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s/scalar"
+            }
+        }
+    ]
+}
