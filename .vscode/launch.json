@@ -3,7 +3,15 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "C#: AaronsToDoApp.API [http]",
+            "name": "Debug Front End",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/AaronsToDoApp.FrontEnd",
+            "preLaunchTask": "Run AaronsToDoApp.FrontEnd"
+        },
+        {
+            "name": "Debug API",
             "type": "dotnet",
             "request": "launch",
             "projectPath": "${workspaceFolder}/AaronsToDoApp.API/AaronsToDoApp.API.csproj",
@@ -13,6 +21,15 @@
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
                 "uriFormat": "%s/scalar"
             }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "Full Stack Debug",
+            "configurations": [
+                "Debug API",
+                "Debug Front End"
+            ]
         }
     ]
 }

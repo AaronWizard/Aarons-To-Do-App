@@ -20,7 +20,8 @@
 		}
 	},
 	"forwardPorts": [
-		5248 /* API */
+		5248 /* API */,
+		5173 /* Front end */
 	],
 	"portsAttributes": {
 		"5248": {
