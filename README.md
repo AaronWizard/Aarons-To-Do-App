@@ -7,3 +7,6 @@ Users may register an account and log in. When logged in, users have a set of to
 ## Development
 
 The API uses ASP.NET Core while the front-end uses React.
+
+The project uses a [dev container](https://containers.dev/) to provide a replicable dev environment, and therefore needs Docker for development. \
+Visual Studio Code is used for development, and the dev container includes configuration for VS Code.
