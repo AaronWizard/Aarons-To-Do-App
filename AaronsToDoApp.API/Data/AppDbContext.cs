@@ -1,9 +1,12 @@
 using AaronsToDoApp.API.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace AaronsToDoApp.API.Data;
 
-class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options)
+    : IdentityDbContext<IdentityUser>(options)
 {
     public DbSet<ToDoTask> ToDoTasks { get; set; }
 }

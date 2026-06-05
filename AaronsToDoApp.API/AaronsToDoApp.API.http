@@ -1,6 +1,0 @@
-@AaronsToDoApp.API_HostAddress = http://localhost:5248
-
-GET {{AaronsToDoApp.API_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
