@@ -2,11 +2,21 @@
 
 A to-do task management app to demonstrate full stack web development.
 
-Users may register an account and log in. When logged in, users have a set of to-do tasks. A task consists of a title, a flag for whether it's completed or not, an optional description, and an optional due date. Users may add, edit, or delete tasks.
+Users may register an account and log in. When logged in, users have a set of to-do tasks.
+
+A to-do task has the following:
+
+- A title
+- The date the task was created
+- The date the task was completed, if any
+- An optional due date
+- An optional description
 
 ## Development
 
-The API uses ASP.NET Core while the front-end uses React.
+Front End: React \
+API: ASP.NET Core \
+Data: SQLite
 
 The project uses a [dev container](https://containers.dev/) to provide a replicable dev environment, and therefore needs Docker for development. \
 Visual Studio Code is used for development, and the dev container includes configuration for VS Code.
