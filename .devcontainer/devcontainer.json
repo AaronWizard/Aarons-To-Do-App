@@ -33,5 +33,5 @@
 			"protocol": "http"
 		}
 	},
-	"postCreateCommand": "dotnet restore AaronsToDoApp.API/AaronsToDoApp.API.slnx"
+	"postCreateCommand": "bash .devcontainer/setup.sh"
 }
