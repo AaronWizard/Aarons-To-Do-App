@@ -1,7 +1,12 @@
+using System.Text;
+using AaronsToDoApp;
 using AaronsToDoApp.API.Data;
+using AaronsToDoApp.API.Options;
 using AaronsToDoApp.API.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 
 const string ConnectionStringKey = "AaronsToDoApp";
@@ -47,6 +52,40 @@ builder.Services
 
 #endregion Identity
 
+#region Authentication
+
+var authenticationSection = builder.Configuration.GetSection(
+    AuthenticationOptions.Key
+);
+var authenticationOptions = authenticationSection.Get<AuthenticationOptions>()
+    ?? throw new InvalidOperationException(
+        $"Missing {AuthenticationOptions.Key} configuration section"
+    );
+builder.Services.Configure<AuthenticationOptions>(authenticationSection);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = authenticationOptions.Issuer,
+        ValidAudience = authenticationOptions.Audience,
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(authenticationOptions.SecurityKey)
+        )
+    };
+});
+
+#endregion
+
+builder.Services.AddScoped<AuthTokensService>();
 builder.Services.AddScoped<UsersService>();
 
 builder.Services.AddDataProtection();
@@ -54,7 +93,10 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
+});
 
 var app = builder.Build();
 
@@ -62,13 +104,17 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
-    app.MapScalarApiReference();
+    app.MapScalarApiReference(options =>
+    {
+        options.AddPreferredSecuritySchemes(
+            JwtBearerDefaults.AuthenticationScheme
+        );
+    });
 }
 
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

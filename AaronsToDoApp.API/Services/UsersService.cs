@@ -9,13 +9,16 @@ public class UsersService
 
     private readonly UserManager<IdentityUser> _userManager;
     private readonly PasswordOptions _passwordOptions;
+    private readonly AuthTokensService _authTokensService;
 
     public UsersService(
         UserManager<IdentityUser> userManager,
-        IOptions<IdentityOptions> identityOptions)
+        IOptions<IdentityOptions> identityOptions,
+        AuthTokensService authTokensService)
     {
         _userManager = userManager;
         _passwordOptions = identityOptions.Value.Password;
+        _authTokensService = authTokensService;
     }
 
     public PasswordOptions PasswordOptions
@@ -43,7 +46,7 @@ public class UsersService
             return null;
         }
 
-        var accessToken = "test access token";
+        var accessToken = _authTokensService.GenerateAccessToken(user);
         var refreshToken = "test refresh token";
 
         return new AuthTokens(accessToken, refreshToken);
