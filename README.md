@@ -20,3 +20,13 @@ Data: SQLite
 
 The project uses a [dev container](https://containers.dev/) to provide a replicable dev environment, and therefore needs Docker for development. \
 Visual Studio Code is used for development, and the dev container includes configuration for VS Code.
+
+### Reminders
+
+When updating the model, migrate and update the database with the following commands:
+
+```bash
+# From workspace root
+dotnet ef migrations add [Migration name] --project AaronsToDoApp.API
+dotnet ef database update --project AaronsToDoApp.API
+```
