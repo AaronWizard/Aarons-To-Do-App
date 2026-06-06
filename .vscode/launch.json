@@ -8,7 +8,8 @@
             "type": "chrome",
             "url": "http://localhost:5173",
             "webRoot": "${workspaceFolder}/AaronsToDoApp.FrontEnd",
-            "preLaunchTask": "Run AaronsToDoApp.FrontEnd"
+            "preLaunchTask": "Run AaronsToDoApp.FrontEnd",
+            "postDebugTask": "Stop Front End Vite Server"
         },
         {
             "name": "Debug API",

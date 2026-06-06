@@ -25,6 +25,24 @@
 			],
 			"detail": "vite",
 			"isBackground": true
+		},
+		{
+			"label": "Stop Front End Vite Server",
+			"type": "shell",
+			"command": "echo ${input:terminateVite}",
+			"presentation": {
+				"close": true,
+				"showReuseMessage": false
+			},
+			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"id": "terminateVite",
+			"type": "command",
+			"command": "workbench.action.tasks.terminate",
+			"args": "Run AaronsToDoApp.FrontEnd"
 		}
 	]
 }
