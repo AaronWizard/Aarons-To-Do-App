@@ -43,6 +43,8 @@ public class ToDoTasksController(ToDoTasksService tasksService) : ControllerBase
 
     [HttpPost]
     [ProducesResponseType(typeof(ToDoTaskDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(
+        typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<ToDoTaskDto>> CreateTask(
         [FromBody] CreateToDoTaskRequestDto request)
     {
@@ -57,6 +59,8 @@ public class ToDoTasksController(ToDoTasksService tasksService) : ControllerBase
 
     [HttpPut("{taskId:int}")]
     [ProducesResponseType(typeof(ToDoTaskDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ToDoTaskDto>> UpdateTask(
         int taskId, [FromBody] UpdateToDoTaskRequest request)
