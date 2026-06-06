@@ -21,6 +21,8 @@ Data: SQLite
 The project uses a [dev container](https://containers.dev/) to provide a replicable dev environment, and therefore needs Docker for development. \
 Visual Studio Code is used for development, and the dev container includes configuration for VS Code.
 
+When the API is running in dev mode, the Scalar interface is at `http://localhost:5248/scalar`.
+
 ### Reminders
 
 When updating the model, migrate and update the database with the following commands:
