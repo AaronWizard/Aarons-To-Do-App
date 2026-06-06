@@ -77,6 +77,7 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.MapInboundClaims = false;
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -99,6 +100,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<AuthTokensService>();
 builder.Services.AddScoped<UsersService>();
+builder.Services.AddScoped<ToDoTasksService>();
 
 builder.Services.AddDataProtection();
 builder.Services.AddRouting(options => options.LowercaseUrls = true);
