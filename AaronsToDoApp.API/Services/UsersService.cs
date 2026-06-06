@@ -5,20 +5,16 @@ namespace AaronsToDoApp.API.Services;
 
 public class UsersService
 {
-    public record AuthTokens(string AccessToken, string RefreshToken);
-
     private readonly UserManager<IdentityUser> _userManager;
     private readonly PasswordOptions _passwordOptions;
-    private readonly AuthTokensService _authTokensService;
 
     public UsersService(
         UserManager<IdentityUser> userManager,
-        IOptions<IdentityOptions> identityOptions,
-        AuthTokensService authTokensService)
+        IOptions<IdentityOptions> identityOptions
+    )
     {
         _userManager = userManager;
         _passwordOptions = identityOptions.Value.Password;
-        _authTokensService = authTokensService;
     }
 
     public PasswordOptions PasswordOptions
@@ -32,7 +28,9 @@ public class UsersService
         return await _userManager.CreateAsync(user, password);
     }
 
-    public async Task<AuthTokens?> Login(string email, string password)
+    public async Task<IdentityUser?> GetUserForLogin(
+        string email, string password
+    )
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
@@ -46,9 +44,6 @@ public class UsersService
             return null;
         }
 
-        var accessToken = _authTokensService.GenerateAccessToken(user);
-        var refreshToken = "test refresh token";
-
-        return new AuthTokens(accessToken, refreshToken);
+        return user;
     }
 }

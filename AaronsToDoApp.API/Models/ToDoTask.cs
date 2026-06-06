@@ -8,7 +8,7 @@ public class ToDoTask
     public required string UserId { get; set; }
 
     public required string Name { get; set; }
-    public DateTime CreatedUTC { get; set; }
+    public DateTime CreatedUTC { get; set; } = DateTime.UtcNow;
     public DateTime? CompletedUTC { get; set; }
 
     public DateTime? DeadlineUTC { get; set; }

@@ -2,8 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AaronsToDoApp.API.Data;
+using AaronsToDoApp.API.Models;
 using AaronsToDoApp.API.Options;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,15 +14,87 @@ namespace AaronsToDoApp.API.Services;
 
 public class AuthTokensService
 {
+    public record AuthTokens(string AccessToken, string RefreshToken);
+
+    private readonly UserManager<IdentityUser> _userManager;
+    private readonly AppDbContext _database;
     private readonly AuthenticationOptions _authOptions;
 
     public AuthTokensService(
+        UserManager<IdentityUser> userManager,
+        AppDbContext database,
         IOptions<AuthenticationOptions> authOptions)
     {
+        _userManager = userManager;
+        _database = database;
         _authOptions = authOptions.Value;
     }
 
-    public string GenerateAccessToken(IdentityUser user)
+    public async Task<AuthTokens> LoginAsync(IdentityUser user)
+    {
+        // Log out of other sessions.
+        var existingTokens = await _database.RefreshTokens
+            .Where(t =>
+                (t.UserId == user.Id)
+                && (t.ExpiresUTC <= DateTime.UtcNow)
+                && (t.RevokedUTC == null)
+            ).ToListAsync();
+        existingTokens.ForEach(t => t.RevokedUTC = DateTime.UtcNow);
+
+        var authTokens = await CreateAuthTokensAsync(user);
+        await _database.SaveChangesAsync();
+
+        return authTokens;
+    }
+
+    public async Task<AuthTokens> RefreshAccessAsync(string refreshToken)
+    {
+        var existingToken = await _database.RefreshTokens
+            .Include(t => t.User)
+            .SingleOrDefaultAsync(t => t.Token == refreshToken)
+            ?? throw new SecurityTokenException("Invalid refresh token");
+
+        if (!existingToken.IsActive)
+        {
+            throw new SecurityTokenException(
+                "Refresh token expired or revoked"
+            );
+        }
+
+        // Log out of given session.
+        existingToken.RevokedUTC = DateTime.UtcNow;
+
+        var authTokens = await CreateAuthTokensAsync(existingToken.User!);
+        await _database.SaveChangesAsync();
+
+        return authTokens;
+    }
+
+    public async Task RevokeRefreshTokenAsync(string refreshToken)
+    {
+        var existingToken = await _database.RefreshTokens
+            .SingleOrDefaultAsync(t => t.Token == refreshToken)
+            ?? throw new SecurityTokenException("Invalid refresh token");
+
+        if (!existingToken.IsActive)
+        {
+            throw new SecurityTokenException(
+                "Refresh token is already inactive"
+            );
+        }
+
+        existingToken.RevokedUTC = DateTime.UtcNow;
+        await _database.SaveChangesAsync();
+    }
+
+    private async Task<AuthTokens> CreateAuthTokensAsync(IdentityUser user)
+    {
+        var accessToken = CreateAccessToken(user);
+        var refreshToken = await CreateRefreshTokenAsync(user.Id);
+        return new AuthTokens(accessToken, refreshToken);
+    }
+
+    private string CreateAccessToken(IdentityUser user)
     {
         var claims = new[]
         {
@@ -46,11 +121,23 @@ public class AuthTokensService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    public string GenerateRefreshToken()
+    private async Task<string> CreateRefreshTokenAsync(string userId)
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
         rng.GetBytes(randomNumber);
-        return Convert.ToBase64String(randomNumber);
+        var tokenValue = Convert.ToBase64String(randomNumber);
+
+        var newToken = new RefreshToken
+        {
+            Token = tokenValue,
+            UserId = userId,
+            ExpiresUTC = DateTime.UtcNow.AddHours(
+                 _authOptions.RefreshTokenLifetimeHours
+             )
+        };
+        _database.RefreshTokens.Add(newToken);
+
+        return tokenValue;
     }
 }
