@@ -1,5 +1,6 @@
 using AaronsToDoApp.API.DTOs;
 using AaronsToDoApp.API.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -13,12 +14,15 @@ public class UsersController(
 ) : ControllerBase
 {
     [HttpGet("password-requirements")]
-    public IActionResult PasswordRequirements()
+    public PasswordOptions PasswordRequirements()
     {
-        return Ok(usersService.PasswordOptions);
+        return usersService.PasswordOptions;
     }
 
     [HttpPost("[action]")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(
+        typeof(IEnumerable<string>), StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Register([FromBody] RegisterDto request)
     {
         var result = await usersService.Register(
@@ -41,7 +45,10 @@ public class UsersController(
     }
 
     [HttpPost("[action]")]
-    public async Task<IActionResult> Login([FromBody] LoginDto request)
+    [ProducesResponseType(typeof(AuthTokensDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AuthTokensDto>> Login(
+        [FromBody] LoginDto request)
     {
         var user = await usersService.GetUserForLogin(
             request.Email, request.Password
@@ -52,22 +59,24 @@ public class UsersController(
         }
         else
         {
-            var authTokens = await authTokensService.LoginAsync(user);
-            return Ok(authTokens);
+            var authTokensDto = await authTokensService.LoginAsync(user);
+            return authTokensDto;
         }
     }
 
     [HttpPost("refresh-access")]
-    public async Task<IActionResult> RefreshAccess(
+    [ProducesResponseType(typeof(AuthTokensDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<AuthTokensDto>> RefreshAccess(
         [FromBody] RefreshTokenDto refreshToken
     )
     {
         try
         {
-            var accessTokens = await authTokensService.RefreshAccessAsync(
+            var authTokensDto = await authTokensService.RefreshAccessAsync(
                 refreshToken.RefreshToken
             );
-            return Ok(accessTokens);
+            return authTokensDto;
         }
         catch (SecurityTokenException)
         {
@@ -76,6 +85,8 @@ public class UsersController(
     }
 
     [HttpPost("revoke-refresh-token")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> RevokeRefreshToken(
         [FromBody] RefreshTokenDto refreshToken
     )
