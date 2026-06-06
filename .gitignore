@@ -1,2 +1,4 @@
 .DS_Store
 AaronsToDoApp.API/SQLite/database.db
+AaronsToDoApp.API/SQLite/database.db-shm
+AaronsToDoApp.API/SQLite/database.db-wal
