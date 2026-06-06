@@ -10,4 +10,6 @@ public class AuthenticationOptions
 
     public required int AccessTokenLifetimeMinutes { get; set; }
     public required int RefreshTokenLifetimeHours { get; set; }
+
+    public required int ClockSkewMinutes { get; set; }
 }
