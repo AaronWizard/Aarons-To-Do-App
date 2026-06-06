@@ -5,6 +5,7 @@ using AaronsToDoApp.API.Options;
 using AaronsToDoApp.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -23,6 +24,13 @@ var connectionString =
     ?? throw new InvalidOperationException(
         $"Missing connection string: '{ConnectionStringKey}'"
     );
+
+var dbFilePath = new SqliteConnectionStringBuilder(connectionString).DataSource;
+var dbDir = Path.GetDirectoryName(dbFilePath);
+if (!string.IsNullOrEmpty(dbDir))
+{
+    Directory.CreateDirectory(dbDir);
+}
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(connectionString)
