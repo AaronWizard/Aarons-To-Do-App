@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using AaronsToDoApp.API.Data;
+using AaronsToDoApp.API.DTOs;
 using AaronsToDoApp.API.Models;
 using AaronsToDoApp.API.Options;
 using Microsoft.AspNetCore.Identity;
@@ -12,10 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace AaronsToDoApp.API.Services;
 
-public class AuthTokensService
+public partial class AuthTokensService
 {
-    public record AuthTokens(string AccessToken, string RefreshToken);
-
     private readonly UserManager<IdentityUser> _userManager;
     private readonly AppDbContext _database;
     private readonly AuthenticationOptions _authOptions;
@@ -30,7 +29,7 @@ public class AuthTokensService
         _authOptions = authOptions.Value;
     }
 
-    public async Task<AuthTokens> LoginAsync(IdentityUser user)
+    public async Task<AuthTokensDto> LoginAsync(IdentityUser user)
     {
         // Log out of other sessions.
         var existingTokens = await _database.RefreshTokens
@@ -47,7 +46,7 @@ public class AuthTokensService
         return authTokens;
     }
 
-    public async Task<AuthTokens> RefreshAccessAsync(string refreshToken)
+    public async Task<AuthTokensDto> RefreshAccessAsync(string refreshToken)
     {
         var existingToken = await _database.RefreshTokens
             .Include(t => t.User)
@@ -87,11 +86,11 @@ public class AuthTokensService
         await _database.SaveChangesAsync();
     }
 
-    private async Task<AuthTokens> CreateAuthTokensAsync(IdentityUser user)
+    private async Task<AuthTokensDto> CreateAuthTokensAsync(IdentityUser user)
     {
         var accessToken = CreateAccessToken(user);
         var refreshToken = await CreateRefreshTokenAsync(user.Id);
-        return new AuthTokens(accessToken, refreshToken);
+        return new AuthTokensDto(accessToken, refreshToken);
     }
 
     private string CreateAccessToken(IdentityUser user)

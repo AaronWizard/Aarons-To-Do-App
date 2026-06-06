@@ -1,3 +1,4 @@
+using AaronsToDoApp.API.DTOs;
 using AaronsToDoApp.API.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,11 +12,6 @@ public class UsersController(
     AuthTokensService authTokensService
 ) : ControllerBase
 {
-    public record RegisterDto(string Email, string Password);
-    public record LoginDto(string Email, string Password);
-
-    public record RefreshTokenDto(string RefreshToken);
-
     [HttpGet("password-requirements")]
     public IActionResult PasswordRequirements()
     {
