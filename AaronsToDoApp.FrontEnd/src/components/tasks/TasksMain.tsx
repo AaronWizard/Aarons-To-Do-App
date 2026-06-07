@@ -1,11 +1,14 @@
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import AddIcon from '@mui/icons-material/Add';
 import { useState } from 'react';
+import {
+    Box,
+    Button,
+    Container,
+    Typography
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 
 import TaskPages from './tasks-list/TaskPages';
+import TaskEdit from './TaskEdit';
 
 const PAGE_SIZE = 20;
 
@@ -13,6 +16,8 @@ export default function TasksMain() {
     // Incrementing this key tells TaskPages to re-fetch the current page.
     // Any component that performs a mutation should call handleUpdate().
     const [refreshKey, setRefreshKey] = useState(0);
+
+    const [isAddOpen, setIsAddOpen] = useState(false);
 
     function handleUpdate(): void {
         setRefreshKey((k) => k + 1);
@@ -34,6 +39,7 @@ export default function TasksMain() {
                 <Button
                     variant="contained"
                     startIcon={<AddIcon />}
+                    onClick={() => setIsAddOpen(true)}
                 >
                     Add Task
                 </Button>
@@ -43,6 +49,15 @@ export default function TasksMain() {
                 pageSize={PAGE_SIZE}
                 refreshKey={refreshKey}
                 onUpdated={handleUpdate}
+            />
+
+            <TaskEdit
+                open={isAddOpen}
+                onClose={() => setIsAddOpen(false)}
+                onSaved={() => {
+                    setIsAddOpen(false);
+                    handleUpdate();
+                }}
             />
         </Container>
     );
