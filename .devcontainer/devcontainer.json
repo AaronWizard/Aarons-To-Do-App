@@ -20,6 +20,15 @@
 				"streetsidesoftware.code-spell-checker-canadian-english"
 			],
 			"settings": {
+				"editor.codeActionsOnSave": {
+					"source.fixAll.eslint": "explicit"
+				},
+				"eslint.validate": [
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact"
+				],
 				"cSpell.language": "en-CA"
 			}
 		}
