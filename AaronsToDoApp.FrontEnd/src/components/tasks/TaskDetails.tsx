@@ -16,6 +16,7 @@ import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../services/types';
 import { tasksService } from '../../services/task_service';
 import { formatDate } from '../../services/dates_service';
 import ConfirmDeleteTask from './ConfirmDeleteTask';
+import TaskEdit from './TaskEdit';
 
 interface TaskDetailsProps {
     open: boolean;
@@ -32,6 +33,7 @@ export default function TaskDetails({
     onUpdated,
     onClose
 }: TaskDetailsProps) {
+    const [isEditOpen, setIsEditOpen] = useState(false);
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [isBusy, setIsBusy] = useState(false);
 
@@ -139,9 +141,13 @@ export default function TaskDetails({
                     </Box>
                 </DialogContent>
 
-                <DialogActions sx={{
-                    justifyContent: 'space-between', px: 3, pb: 2
-                }}>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button
+                        onClick={() => setIsEditOpen(true)}
+                        disabled={isBusy}
+                    >
+                        Edit
+                    </Button>
                     <Button
                         color="error"
                         onClick={() => setIsDeleteConfirmOpen(true)}
@@ -149,9 +155,17 @@ export default function TaskDetails({
                     >
                         Delete
                     </Button>
+                    <Box sx={{ flexGrow: 1 }} />
                     <Button onClick={onClose}>Close</Button>
                 </DialogActions>
             </Dialog>
+
+            <TaskEdit
+                open={isEditOpen}
+                task={task}
+                onClose={() => setIsEditOpen(false)}
+                onSaved={onUpdated}
+            />
 
             <ConfirmDeleteTask
                 isDeleteConfirmOpen={isDeleteConfirmOpen}
