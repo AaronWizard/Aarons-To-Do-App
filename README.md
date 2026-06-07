@@ -33,13 +33,17 @@ Front End: React \
 API: ASP.NET Core \
 Data: SQLite
 
-#### The API
+#### API
 
 Entity Framework Core is used to map C# model object to the SQLite database, using a code-first approach.
 
 User accounts, and related features such as password validation, are implemented using [ASP.NET Core Identity](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-10.0&tabs=visual-studio). Note that [Identity's API endpoints](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0#activate-identity-apis) are *not* used by the API, nor is Identity's authentication system used. Identity's API endpoints are avoided in favour of custom endpoints with more control over their interface and outputs. For example, the [Identity API `/register` endpoint](https://learn.microsoft.com/en-us/aspnet/core/security/authentication/identity-api-authorization?view=aspnetcore-10.0#use-the-post-register-endpoint) reports when an email is already in use, which this app avoids for security reasons. Identity is still used to manage the data for user accounts, and for user password validation and storage.
 
 Authentication is done using JWT tokens, paired with a refresh token strategy. Users have one active refresh token at a time; refresh tokens are revoked when a new token is issued.
+
+#### Front-end
+
+[MUI](https://mui.com/) and its Material UI is used for the base UI and theming.
 
 ### Editing and Running
 
