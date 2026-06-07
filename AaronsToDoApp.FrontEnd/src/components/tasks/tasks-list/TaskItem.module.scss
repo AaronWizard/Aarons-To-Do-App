@@ -1,0 +1,10 @@
+// Applied to the task's card when its deadline has passed and it is not yet completed.
+.overdueCard {
+    background-color: #ffebee !important;
+}
+
+// Applied to the task's name when the task has been completed.
+.completedText {
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.38);
+}
