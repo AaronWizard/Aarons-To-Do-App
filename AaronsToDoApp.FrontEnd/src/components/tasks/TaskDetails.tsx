@@ -46,7 +46,6 @@ export default function TaskDetails({
             };
             await tasksService.updateTask(task.id, data);
             onUpdated();
-            onClose();
         } finally {
             setIsBusy(false);
         }

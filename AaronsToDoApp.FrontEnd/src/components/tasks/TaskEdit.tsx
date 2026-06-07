@@ -122,6 +122,7 @@ export default function TaskEdit({
             return;
         }
         saveMutation.mutate();
+        onClose();
     }
 
     // User closed edit form.

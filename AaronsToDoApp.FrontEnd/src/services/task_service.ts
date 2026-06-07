@@ -8,7 +8,7 @@ import { testTasks } from "./test_data";
 
 class TasksService {
     private tasks: ToDoTaskDto[] = testTasks.map((t) => ({ ...t }));
-    private nextId: number = 4;
+    private nextId: number = this.tasks.length + 1;
 
     async getPaginatedTasks(
         page: number,

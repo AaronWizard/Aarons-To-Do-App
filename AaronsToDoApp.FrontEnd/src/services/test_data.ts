@@ -12,7 +12,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 9,
         name: 'A - Task 9',
-        createdUTC: new Date('2026-06-9'),
+        createdUTC: new Date('2026-06-09'),
         completedUTC: null,
         deadlineUTC: null,
         description: "This is a test description",
@@ -20,7 +20,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 8,
         name: 'A - Task 8',
-        createdUTC: new Date('2026-06-8'),
+        createdUTC: new Date('2026-06-08'),
         completedUTC: null,
         deadlineUTC: null,
         description: "This is a test description",
@@ -28,7 +28,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 7,
         name: 'A - Task 7',
-        createdUTC: new Date('2026-06-7'),
+        createdUTC: new Date('2026-06-07'),
         completedUTC: null,
         deadlineUTC: null,
         description: "This is a test description",
@@ -36,15 +36,15 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 6,
         name: 'A - Task 6',
-        createdUTC: new Date('2026-06-6'),
-        completedUTC: null,
+        createdUTC: new Date('2026-05-06'),
+        completedUTC: new Date('2026-05-07'),
         deadlineUTC: null,
         description: "This is a test description",
     },
     {
         id: 5,
         name: 'A - Task 5',
-        createdUTC: new Date('2026-06-5'),
+        createdUTC: new Date('2026-06-05'),
         completedUTC: null,
         deadlineUTC: null,
         description: "This is a test description",
@@ -52,7 +52,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 4,
         name: 'A - Task 4',
-        createdUTC: new Date('2026-06-4'),
+        createdUTC: new Date('2026-06-04'),
         completedUTC: null,
         deadlineUTC: null,
         description: "This is a test description",
@@ -60,7 +60,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 3,
         name: 'A - Task 3',
-        createdUTC: new Date('2026-06-3'),
+        createdUTC: new Date('2026-06-03'),
         completedUTC: null,
         deadlineUTC: null,
         description: "This is a test description",
@@ -68,7 +68,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 2,
         name: 'A - Task 2',
-        createdUTC: new Date('2026-06-2'),
+        createdUTC: new Date('2026-06-02'),
         completedUTC: null,
         deadlineUTC: new Date('2026-06-20T19:38:16.207'),
         description: null,
@@ -76,7 +76,7 @@ export const testTasks: ToDoTaskDto[] = [
     {
         id: 1,
         name: 'A - Task 1',
-        createdUTC: new Date('2026-06-1'),
+        createdUTC: new Date('2026-06-01'),
         completedUTC: new Date('2026-06-07T19:38:13.215'),
         deadlineUTC: null,
         description: null,
