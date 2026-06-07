@@ -1,8 +1,10 @@
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Typography from '@mui/material/Typography';
+import {
+    Box,
+    Card,
+    IconButton,
+    Tooltip,
+    Typography
+} from '@mui/material';
 
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -11,13 +13,15 @@ import EditIcon from '@mui/icons-material/Edit';
 
 import { useState } from 'react';
 
-import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../../services/types';
-
+import type { ToDoTaskDto, UpdateTaskRequestDto }
+    from '../../../services/types';
 import { tasksService } from '../../../services/task_service';
 import { formatDate } from '../../../services/dates_service';
 
 import styles from './TaskItem.module.scss';
 import ConfirmDeleteTask from '../ConfirmDeleteTask';
+import TaskEdit from '../TaskEdit';
+import TaskDetails from '../TaskDetails';
 
 interface TaskItemProps {
     task: ToDoTaskDto;
@@ -35,6 +39,9 @@ function isOverdue(task: ToDoTaskDto): boolean {
 
 export default function TaskItem({ task, onUpdated }: TaskItemProps) {
     const [isToggling, setIsToggling] = useState(false);
+
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+    const [isEditOpen, setIsEditOpen] = useState(false);
 
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -78,11 +85,16 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
             >
                 <Box
                     sx={{ flexGrow: 1, px: 2, py: 1.5, cursor: 'pointer' }}
+                    onClick={() => setIsDetailsOpen(true)}
                 >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                    <Box sx={{
+                        display: 'flex', alignItems: 'center', gap: 0.75
+                    }}>
                         <Typography
                             variant="body1"
-                            className={completed ? styles.completedText : undefined}
+                            className={completed ?
+                                styles.completedText : undefined
+                            }
                         >
                             {task.name}
                         </Typography>
@@ -98,19 +110,27 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
                     )}
                 </Box>
 
-                <Box sx={{ display: 'flex', alignItems: 'center', pr: 1, gap: 0.25 }}>
-                    <Tooltip title={completed ? 'Mark incomplete' : 'Mark complete'}>
+                <Box sx={{
+                    display: 'flex', alignItems: 'center', pr: 1, gap: 0.25
+                }}>
+                    <Tooltip
+                        title={completed ? 'Mark incomplete' : 'Mark complete'}
+                    >
                         <span>
                             <IconButton
                                 size="small"
                                 color={completed ? 'default' : 'success'}
                                 onClick={handleToggleComplete}
                                 disabled={isToggling}
-                                aria-label={completed ? 'Mark incomplete' : 'Mark complete'}
+                                aria-label={completed ?
+                                    'Mark incomplete' : 'Mark complete'
+                                }
                             >
                                 {
                                     completed ?
-                                        <CheckBoxIcon fontSize="small" color="success" />
+                                        <CheckBoxIcon
+                                            fontSize="small" color="success"
+                                        />
                                         : <CheckBoxOutlineBlankIcon />
                                 }
                             </IconButton>
@@ -122,6 +142,7 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
                             size="small"
                             color="primary"
                             aria-label="Edit task"
+                            onClick={() => setIsEditOpen(true)}
                         >
                             <EditIcon />
                         </IconButton>
@@ -141,6 +162,20 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
             </Card>
 
             {/* Dialogs */}
+
+            <TaskDetails
+                open={isDetailsOpen}
+                task={task}
+                onUpdated={onUpdated}
+                onClose={() => setIsDetailsOpen(false)}
+            />
+
+            <TaskEdit
+                open={isEditOpen}
+                task={task}
+                onClose={() => setIsEditOpen(false)}
+                onSaved={onUpdated}
+            />
 
             <ConfirmDeleteTask
                 isDeleteConfirmOpen={isDeleteConfirmOpen}
