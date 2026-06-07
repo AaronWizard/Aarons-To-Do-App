@@ -7,7 +7,7 @@ import { tasksService } from '../../../services/task_service';
 import TaskList from './TaskList';
 import PageNav from '../../PageNav';
 
-const TASK_ITEM_HEIGHT = 65;
+const TASK_ITEM_HEIGHT = 60;
 
 interface TaskPagesProps {
     pageSize: number,
@@ -32,6 +32,7 @@ export default function TaskPages(
     } = useQuery({
         // Trigger re-fetch when these change
         queryKey: ['tasks', { page, pageSize, refreshKey }],
+
         queryFn: async ({ signal }) => {
             return tasksService.getPaginatedTasks(page, pageSize, signal);
         },

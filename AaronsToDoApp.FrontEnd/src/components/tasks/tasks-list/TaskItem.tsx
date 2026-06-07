@@ -79,7 +79,7 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
     return (
         <>
             <Card
-                className={overdue ? styles.overdueCard : undefined}
+                className={overdue ? styles.overdue : undefined}
                 variant="outlined"
                 sx={{ display: 'flex', alignItems: 'center', mb: 1 }}
             >
@@ -87,27 +87,26 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
                     sx={{ flexGrow: 1, px: 2, py: 1.5, cursor: 'pointer' }}
                     onClick={() => setIsDetailsOpen(true)}
                 >
-                    <Box sx={{
-                        display: 'flex', alignItems: 'center', gap: 0.75
-                    }}>
+                    <Box
+                        component="span"
+                        sx={{ display: 'inline-block' }}
+                        className={completed ? styles.completed : undefined}
+                        color={overdue ? 'error' : undefined}
+                    >
                         <Typography
+                            component="span"
                             variant="body1"
-                            className={completed ?
-                                styles.completedText : undefined
-                            }
+                            sx={{ mr: 1 }}
                         >
                             {task.name}
                         </Typography>
-                    </Box>
 
-                    {task.deadlineUTC && (
-                        <Typography
-                            variant="caption"
-                            color={overdue ? 'error' : 'text.secondary'}
-                        >
-                            Due: {formatDate(task.deadlineUTC)}
-                        </Typography>
-                    )}
+                        {task.deadlineUTC && (
+                            <Typography component="span" variant="caption">
+                                Due: {formatDate(task.deadlineUTC)}
+                            </Typography>
+                        )}
+                    </Box>
                 </Box>
 
                 <Box sx={{
