@@ -39,7 +39,11 @@ export default function TasksMain() {
                 </Button>
             </Box>
 
-            <TaskPages pageSize={PAGE_SIZE} refreshKey={refreshKey} onUpdated={handleUpdate} />
+            <TaskPages
+                pageSize={PAGE_SIZE}
+                refreshKey={refreshKey}
+                onUpdated={handleUpdate}
+            />
         </Container>
     );
 }

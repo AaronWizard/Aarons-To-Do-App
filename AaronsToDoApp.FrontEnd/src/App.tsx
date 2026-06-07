@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
-import Footer from './components/Footer';
+
 import Header from './components/Header';
+import Footer from './components/Footer';
 import TasksMain from './components/tasks/TasksMain';
 
 export default function App() {

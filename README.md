@@ -43,7 +43,8 @@ Authentication is done using JWT tokens, paired with a refresh token strategy. U
 
 #### Front-end
 
-[MUI](https://mui.com/) and its Material UI is used for the base UI and theming.
+- [MUI](https://mui.com/) is used for the base UI and theming.
+- [TanStack Query](https://tanstack.com/query/latest) is used for tracking server state when using the API.
 
 ### Editing and Running
 

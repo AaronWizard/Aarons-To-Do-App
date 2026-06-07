@@ -1,4 +1,9 @@
-import type { CreateTaskRequestDto, PagedDto, ToDoTaskDto, UpdateTaskRequestDto } from "./types";
+import type {
+    CreateTaskRequestDto,
+    PagedDto,
+    ToDoTaskDto,
+    UpdateTaskRequestDto
+} from "./types";
 import { testTasks } from "./test_data";
 
 class TasksService {
@@ -8,6 +13,7 @@ class TasksService {
     async getPaginatedTasks(
         page: number,
         pageSize: number,
+        _signal: AbortSignal
     ): Promise<PagedDto<ToDoTaskDto>> {
         const start = (page - 1) * pageSize;
         const end = start + pageSize;

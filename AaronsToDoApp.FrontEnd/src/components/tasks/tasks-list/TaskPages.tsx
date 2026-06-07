@@ -1,13 +1,13 @@
-import Box from '@mui/material/Box';
-import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+import { Box, CircularProgress, Typography } from '@mui/material';
 
 import { tasksService } from '../../../services/task_service';
-import type { PagedDto, ToDoTaskDto } from '../../../services/types';
 
 import TaskList from './TaskList';
 import PageNav from '../../PageNav';
+
+const TASK_ITEM_HEIGHT = 65;
 
 interface TaskPagesProps {
     pageSize: number,
@@ -23,47 +23,29 @@ export default function TaskPages(
     { pageSize, refreshKey, onUpdated }: TaskPagesProps
 ) {
     const [page, setPage] = useState(1);
-    const [pagedData, setPagedData] = useState<PagedDto<ToDoTaskDto> | null>(
-        null,
-    );
-    const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
 
-    // Update list of tasks when page, page size, or refresh key changes.
-    useEffect(() => {
-        let cancelled = false;
+    const {
+        data: pagedData,
+        isPending,
+        isFetching,
+        error
+    } = useQuery({
+        // Trigger re-fetch when these change
+        queryKey: ['tasks', { page, pageSize, refreshKey }],
+        queryFn: async ({ signal }) => {
+            return tasksService.getPaginatedTasks(page, pageSize, signal);
+        },
+        placeholderData: keepPreviousData
+    });
 
-        async function fetchPage() {
-            setIsLoading(true);
-            setError(null);
-            try {
-                const data = await tasksService.getPaginatedTasks(page, pageSize);
-                if (cancelled) return;
+    // Render-Phase state update
+    // Don't go out of page bounds.
+    if (pagedData && (pagedData.totalPages > 0)
+        && (page > pagedData.totalPages)) {
+        setPage(pagedData.totalPages);
+    }
 
-                setPagedData(data);
-
-                // If the current page is now beyond the last page (e.g. after
-                // deleting the only item on the last page), step back.
-                if (data.totalPages > 0 && page > data.totalPages) {
-                    setPage(data.totalPages);
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setError('Failed to load tasks.');
-                    console.error(err);
-                }
-            } finally {
-                if (!cancelled) setIsLoading(false);
-            }
-        }
-
-        fetchPage();
-        return () => {
-            cancelled = true;
-        };
-    }, [page, pageSize, refreshKey]);
-
-    if (isLoading && pagedData === null) {
+    if (isPending) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
                 <CircularProgress />
@@ -71,33 +53,50 @@ export default function TaskPages(
         );
     }
 
-    if (error) {
+    if (error && !pagedData) {
         return (
             <Box sx={{ textAlign: 'center', py: 6 }}>
-                <Typography color="error">{error}</Typography>
+                <Typography color="error">Failed to load tasks.</Typography>
             </Box>
         );
     }
 
-    const showPagination = (pagedData !== null) && (pagedData.totalPages > 1);
+    const showPagination = (pagedData?.totalPages ?? 0) > 1;
 
     return (
         <Box>
-            {/* Inline loading indicator while already showing data */}
-            {isLoading && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1 }}>
-                    <CircularProgress size={22} />
+            {/* Reserve fixed space for progress circle. */}
+            <Box sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                mb: 1,
+                height: 22
+            }}>
+                {isFetching && !isPending && <CircularProgress size={22} />}
+            </Box>
+
+            {error && pagedData && (
+                <Box sx={{ mb: 2, textAlign: 'center' }}>
+                    <Typography color="error">
+                        Failed to update tasks. Showing previously loaded data.
+                    </Typography>
                 </Box>
             )}
 
-            <TaskList tasks={pagedData?.items ?? []} onUpdated={onUpdated} />
+            {/* Fixed page size for stable UI. */}
+            <Box sx={{ minHeight: pageSize * TASK_ITEM_HEIGHT }}>
+                <TaskList
+                    tasks={pagedData?.items ?? []}
+                    onUpdated={onUpdated}
+                />
+            </Box>
 
             {
                 showPagination &&
                 <PageNav
                     page={page}
                     totalPages={pagedData.totalPages}
-                    isLoading={isLoading}
+                    isLoading={isFetching}
                     onSetPage={setPage}
                 />
             }
