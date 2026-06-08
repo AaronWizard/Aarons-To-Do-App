@@ -16,7 +16,7 @@ import { useState } from 'react';
 import type { ToDoTaskDto, UpdateTaskRequestDto }
     from '../../../services/types';
 import { tasksService } from '../../../services/task_service';
-import { formatDate } from '../../../services/dates_service';
+import { formatDate } from '../../../utils/dates';
 
 import styles from './TaskItem.module.scss';
 import ConfirmDeleteTask from '../ConfirmDeleteTask';

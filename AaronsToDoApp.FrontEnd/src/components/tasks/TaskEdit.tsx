@@ -19,7 +19,7 @@ import type {
 } from '../../services/types';
 import { tasksService } from '../../services/task_service';
 import { dateToInputValue, inputValueToDate }
-    from '../../services/dates_service';
+    from '../../utils/dates';
 
 interface TaskEditProps {
     open: boolean;

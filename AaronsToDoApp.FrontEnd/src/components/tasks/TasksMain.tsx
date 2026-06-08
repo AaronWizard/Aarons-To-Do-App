@@ -2,7 +2,6 @@ import { useState } from 'react';
 import {
     Box,
     Button,
-    Container,
     Typography
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
@@ -24,7 +23,7 @@ export default function TasksMain() {
     }
 
     return (
-        <Container maxWidth="md">
+        <>
             <Box
                 sx={{
                     display: 'flex',
@@ -33,7 +32,7 @@ export default function TasksMain() {
                     mb: 2,
                 }}
             >
-                <Typography variant="h5" component="h1">
+                <Typography component="h2">
                     My Tasks
                 </Typography>
                 <Button
@@ -59,6 +58,6 @@ export default function TasksMain() {
                     handleUpdate();
                 }}
             />
-        </Container>
+        </>
     );
 }

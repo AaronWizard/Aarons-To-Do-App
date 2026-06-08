@@ -14,7 +14,7 @@ import {
 
 import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../services/types';
 import { tasksService } from '../../services/task_service';
-import { formatDate } from '../../services/dates_service';
+import { formatDate } from '../../utils/dates';
 import ConfirmDeleteTask from './ConfirmDeleteTask';
 import TaskEdit from './TaskEdit';
 
