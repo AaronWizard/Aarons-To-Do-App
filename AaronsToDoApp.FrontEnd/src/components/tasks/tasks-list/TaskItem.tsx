@@ -14,7 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { useState } from 'react';
 
 import type { ToDoTaskDto, UpdateTaskRequestDto }
-    from '../../../services/types';
+    from '../../../api/types';
 import { tasksService } from '../../../services/task_service';
 import { formatDate } from '../../../utils/dates';
 

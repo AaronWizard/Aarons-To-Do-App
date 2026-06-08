@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-import type { ToDoTaskDto } from '../../../services/types';
+import type { ToDoTaskDto } from '../../../api/types';
 import TaskItem from './TaskItem';
 
 interface TaskListProps {

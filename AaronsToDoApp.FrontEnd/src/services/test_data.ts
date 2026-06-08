@@ -1,4 +1,4 @@
-import type { ToDoTaskDto } from "./types";
+import type { ToDoTaskDto } from "../api/types";
 
 export const testTasks: ToDoTaskDto[] = [
     {

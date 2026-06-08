@@ -1,3 +1,31 @@
+export interface LoginDto {
+    email: string;
+    password: string;
+}
+
+export interface AuthTokensDto {
+    accessToken: string;
+    refreshToken: string;
+}
+
+export interface RefreshTokenDto {
+    refreshToken: string;
+}
+
+export interface PasswordRequirementsDto {
+    requiredLength: number;
+    requiredUniqueChars: number;
+    requireNonAlphanumeric: boolean;
+    requireLowercase: boolean;
+    requireUppercase: boolean;
+    requireDigit: boolean;
+}
+
+export interface RegisterDto {
+    email: string;
+    password: string;
+}
+
 export interface PagedDto<T> {
     items: T[];
     page: number;

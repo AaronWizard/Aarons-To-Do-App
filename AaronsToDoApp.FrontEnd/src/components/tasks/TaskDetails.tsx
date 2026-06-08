@@ -12,7 +12,7 @@ import {
     Typography
 } from '@mui/material';
 
-import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../services/types';
+import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../api/types';
 import { tasksService } from '../../services/task_service';
 import { formatDate } from '../../utils/dates';
 import ConfirmDeleteTask from './ConfirmDeleteTask';

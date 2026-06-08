@@ -3,7 +3,7 @@ import type {
     PagedDto,
     ToDoTaskDto,
     UpdateTaskRequestDto
-} from "./types";
+} from "../api/types";
 import { testTasks } from "./test_data";
 
 class TasksService {

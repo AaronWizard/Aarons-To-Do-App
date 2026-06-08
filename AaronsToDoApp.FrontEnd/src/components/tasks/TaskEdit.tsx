@@ -16,7 +16,7 @@ import type {
     CreateTaskRequestDto,
     ToDoTaskDto,
     UpdateTaskRequestDto,
-} from '../../services/types';
+} from '../../api/types';
 import { tasksService } from '../../services/task_service';
 import { dateToInputValue, inputValueToDate }
     from '../../utils/dates';
