@@ -82,11 +82,13 @@ apiClient.interceptors.response.use(
         }
 
         const originalRequest = error.config as AxiosRequestConfig & {
-            _retry?: boolean
+            _retry?: boolean,
+            _skipAuthRefresh?: boolean;
         };
 
         if ((error.response?.status === STATUS_UNAUTHORIZED)
-            && originalRequest && !originalRequest._retry) {
+            && originalRequest && !originalRequest._retry
+            && !originalRequest._skipAuthRefresh) {
             if (isRefreshing) {
                 // Queue response
                 return new Promise((resolve, reject) => {
@@ -139,3 +141,8 @@ apiClient.interceptors.response.use(
         }
     }
 );
+
+export const apiSkipAuthRefresh:
+    AxiosRequestConfig & { _skipAuthRefresh?: boolean } = {
+    _skipAuthRefresh: true
+};

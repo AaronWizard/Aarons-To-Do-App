@@ -1,4 +1,4 @@
-import { apiClient, tokenStorage } from "../api/api";
+import { apiClient, apiSkipAuthRefresh, tokenStorage } from "../api/api";
 import type {
     AuthTokensDto,
     LoginDto,
@@ -16,7 +16,8 @@ class UserService {
     async login(email: string, password: string) {
         const { data } = await apiClient.post<AuthTokensDto>(
             METHOD_LOGIN,
-            { email: email, password: password } as LoginDto
+            { email: email, password: password } as LoginDto,
+            apiSkipAuthRefresh
         );
         tokenStorage.setTokens(data);
     }
