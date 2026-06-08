@@ -13,6 +13,9 @@ using Scalar.AspNetCore;
 const string ConnectionStringKey = "AaronsToDoApp";
 const string PasswordKey = "Password";
 
+const string AllowedOriginsPolicy = "AllowedOrigins";
+const string ContentTypeHeaderField = "content-type";
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -98,6 +101,26 @@ builder.Services.AddAuthentication(options =>
 
 #endregion
 
+#region CORS
+
+var frontEndOptionsSection = builder.Configuration.GetSection(
+    FrontEndOptions.Key);
+var frontEndOptions = frontEndOptionsSection.Get<FrontEndOptions>()
+    ?? throw new InvalidOperationException(
+        $"Missing {FrontEndOptions.Key} configuration section"
+    );
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(
+        name: AllowedOriginsPolicy,
+        policy => policy.WithOrigins([frontEndOptions.BaseUrl])
+            .WithHeaders([ContentTypeHeaderField])
+    );
+});
+
+#endregion CORS
+
 builder.Services.AddScoped<AuthTokensService>();
 builder.Services.AddScoped<UsersService>();
 builder.Services.AddScoped<ToDoTasksService>();
@@ -126,6 +149,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors(AllowedOriginsPolicy);
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
