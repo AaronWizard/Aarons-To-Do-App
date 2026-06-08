@@ -16,7 +16,7 @@ export default function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<TasksMain />} />
-              <Route path="/login" element={<Login nextURL='' />} />
+              <Route path="/login" element={<Login nextURL='/' />} />
             </Routes>
           </BrowserRouter>
         </Container>
