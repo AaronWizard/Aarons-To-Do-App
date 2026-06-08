@@ -1,0 +1,141 @@
+import axios, { AxiosError, type AxiosRequestConfig } from "axios";
+import type { AuthTokensDto, RefreshTokenDto } from "./types";
+import { rejectAPIError } from "../utils/errors";
+
+
+// The API client
+
+const API_URL = 'http://localhost:5248';
+const TIMEOUT_MS = 10000;
+
+export const apiClient = axios.create({
+    baseURL: API_URL,
+    headers: { 'Content-Type': 'application/json' },
+    timeout: TIMEOUT_MS
+});
+
+// Helper functions for tokens
+
+const ACCESS_TOKEN_KEY = 'access_token';
+const REFRESH_TOKEN_KEY = 'refresh_token';
+
+const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY);
+
+export const tokenStorage = {
+    setTokens: (tokens: AuthTokensDto) => {
+        localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
+        localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+    },
+    getRefreshToken: () => localStorage.getItem(REFRESH_TOKEN_KEY),
+    clearTokens: () => {
+        localStorage.removeItem(ACCESS_TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
+    },
+};
+
+const bearerAuthorization = (token: string) => `Bearer ${token}`;
+
+// Intercept requests to attach access token
+apiClient.interceptors.request.use(
+    (config) => {
+        const token = getAccessToken();
+        if (token && config.headers) {
+            config.headers.Authorization = bearerAuthorization(token);
+        }
+        return config;
+    }
+);
+
+// Try to refresh tokens if API call returns 401 Unauthorized.
+// Handle multiple requests using strategy from
+// https://hoseindoran.medium.com/efficient-axios-authentication-preventing-multiple-requests-during-token-refresh-400e9247ab29
+
+let isRefreshing = false;
+// Failed requests to retry when we have new tokens.
+let failedQueue: Array<{
+    resolve: (value?: unknown) => void;
+    reject: (reason?: unknown) => void;
+}> = [];
+
+const processQueue = (
+    error: AxiosError | null,
+    token: string | null = null
+) => {
+    failedQueue.forEach(prom => {
+        if (error) {
+            prom.reject(error);
+        } else {
+            prom.resolve(token);
+        }
+    });
+    failedQueue = [];
+};
+
+const STATUS_UNAUTHORIZED = 401;
+const METHOD_REFRESH = 'api/users/refresh-access';
+
+apiClient.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        if (!error.response) {
+            return rejectAPIError(error); // Network error
+        }
+
+        const originalRequest = error.config as AxiosRequestConfig & {
+            _retry?: boolean
+        };
+
+        if ((error.response?.status === STATUS_UNAUTHORIZED)
+            && originalRequest && !originalRequest._retry) {
+            if (isRefreshing) {
+                // Queue response
+                return new Promise((resolve, reject) => {
+                    failedQueue.push({ resolve, reject });
+                }).then(token => {
+                    if (originalRequest.headers
+                        && (typeof token === 'string')) {
+                        originalRequest.headers.Authorization
+                            = bearerAuthorization(token);
+                    }
+                    return apiClient(originalRequest);
+                }).catch(error => rejectAPIError(error));
+            }
+
+            originalRequest._retry = true;
+            isRefreshing = true;
+
+            try {
+                const refreshToken = tokenStorage.getRefreshToken();
+                if (!refreshToken) {
+                    throw new Error('No refresh token');
+                }
+                // Call the refresh endpoint directly with axios to avoid
+                // interceptor loops
+                const response = await axios.post<AuthTokensDto>(
+                    `${API_URL}/${METHOD_REFRESH}`,
+                    { refreshToken } as RefreshTokenDto
+                );
+                tokenStorage.setTokens(response.data);
+                const accessToken = response.data.accessToken;
+
+                if (originalRequest.headers) {
+                    originalRequest.headers.Authorization
+                        = bearerAuthorization(accessToken);
+                }
+                processQueue(null, accessToken);
+                return apiClient(originalRequest);
+            }
+            catch (refreshError) {
+                processQueue(refreshError as AxiosError, null);
+                tokenStorage.clearTokens();
+                return rejectAPIError(refreshError);
+            }
+            finally {
+                isRefreshing = false;
+            }
+        }
+        else {
+            return rejectAPIError(error);
+        }
+    }
+);
