@@ -112,6 +112,7 @@ export default function TaskEdit({
             setForm(buildInitialForm()); // Clear task
             setNameError(false);
             onSaved();
+            onClose();
         }
     });
 
@@ -122,7 +123,6 @@ export default function TaskEdit({
             return;
         }
         saveMutation.mutate();
-        onClose();
     }
 
     // User closed edit form.
