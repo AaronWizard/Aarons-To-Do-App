@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
+    Alert,
     Box,
     Button,
     Dialog,
@@ -65,7 +66,9 @@ export default function TaskEdit({
     const queryClient = useQueryClient();
 
     const [form, setForm] = useState<FormState>(buildInitialForm(task));
+
     const [nameError, setNameError] = useState(false);
+    const [otherError, setOtherError] = useState(false);
 
     // Update state synchronously during render only when task prop changes
     const [prevTaskProp, setPrevTaskProp] = useState(task);
@@ -111,8 +114,12 @@ export default function TaskEdit({
             // Clean up and close
             setForm(buildInitialForm()); // Clear task
             setNameError(false);
+            setOtherError(false);
             onSaved();
             onClose();
+        },
+        onError: () => {
+            setOtherError(true);
         }
     });
 
@@ -140,6 +147,13 @@ export default function TaskEdit({
                 <Box sx={{
                     display: 'flex', flexDirection: 'column', gap: 2, pt: 1
                 }}>
+                    {
+                        otherError &&
+                        <Alert severity="error">
+                            An error occurred. Please try again later.
+                        </Alert>
+                    }
+
                     <TextField
                         label="Name"
                         value={form.name}
