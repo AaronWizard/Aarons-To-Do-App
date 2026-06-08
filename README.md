@@ -16,6 +16,8 @@ A to-do task has the following:
 
 ### Missing Features
 
+The app lacks ways to sort, search, or filter the user's list of tasks.
+
 The app lacks user account management that would be in a more complete app:
 
 - Email verification
@@ -23,7 +25,7 @@ The app lacks user account management that would be in a more complete app:
 - Password resetting
 - 2FA login
 
-Note that since user accounts implemented using the Identity Framework (see [Development](#development)), it would be easy to add these features in the future.
+Note that since user accounts are implemented using the Identity Framework (see [Development](#development)), it would be easy to add these features in the future.
 
 ## Development
 
