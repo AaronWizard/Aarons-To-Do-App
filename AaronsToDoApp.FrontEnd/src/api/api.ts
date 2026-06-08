@@ -5,7 +5,7 @@ import { rejectAPIError } from "../utils/errors";
 
 // The API client
 
-const API_URL = 'http://localhost:5248';
+const API_URL = 'http://localhost:5248/api';
 const TIMEOUT_MS = 10000;
 
 export const apiClient = axios.create({
@@ -72,7 +72,7 @@ const processQueue = (
 };
 
 const STATUS_UNAUTHORIZED = 401;
-const METHOD_REFRESH = 'api/users/refresh-access';
+const METHOD_REFRESH = 'users/refresh-access';
 
 apiClient.interceptors.response.use(
     (response) => response,
