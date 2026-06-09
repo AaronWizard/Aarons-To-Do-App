@@ -21,16 +21,16 @@ const REFRESH_TOKEN_KEY = 'refresh_token';
 
 export const tokenStorage = {
     setTokens: (tokens: AuthTokensDto) => {
-        localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-        localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+        sessionStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
+        sessionStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
     },
 
-    getAccessToken: () => localStorage.getItem(ACCESS_TOKEN_KEY),
-    getRefreshToken: () => localStorage.getItem(REFRESH_TOKEN_KEY),
+    getAccessToken: () => sessionStorage.getItem(ACCESS_TOKEN_KEY),
+    getRefreshToken: () => sessionStorage.getItem(REFRESH_TOKEN_KEY),
 
     clearTokens: () => {
-        localStorage.removeItem(ACCESS_TOKEN_KEY);
-        localStorage.removeItem(REFRESH_TOKEN_KEY);
+        sessionStorage.removeItem(ACCESS_TOKEN_KEY);
+        sessionStorage.removeItem(REFRESH_TOKEN_KEY);
     },
 };
 
