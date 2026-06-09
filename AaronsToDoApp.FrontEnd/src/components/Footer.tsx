@@ -5,7 +5,7 @@ export default function Footer() {
     return (
         <Box
             component="footer"
-            sx={{ py: 2, textAlign: 'center', bgcolor: 'background.paper' }}
+            sx={{ py: 2, textAlign: 'center' }}
         >
             <Typography variant="body2" color="text.secondary">
                 Aaron MacDonald &copy; 2026
