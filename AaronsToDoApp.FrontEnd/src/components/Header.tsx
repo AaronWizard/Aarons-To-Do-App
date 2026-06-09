@@ -1,13 +1,14 @@
-import AppBar from '@mui/material/AppBar';
-import Button from '@mui/material/Button';
-import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
+import {
+    AppBar,
+    Toolbar,
+    Typography
+} from '@mui/material';
+
+import Logout from './users/Logout';
+import { useAuth } from './auth/useAuth';
 
 export default function Header() {
-    function handleLogout(): void {
-        // TODO: implement logout
-        console.log('Logout clicked');
-    }
+    const { isAuthenticated } = useAuth();
 
     return (
         <AppBar position="static">
@@ -15,9 +16,7 @@ export default function Header() {
                 <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
                     Aaron's To-Do App
                 </Typography>
-                <Button color="inherit" onClick={handleLogout}>
-                    Logout
-                </Button>
+                {isAuthenticated && <Logout />}
             </Toolbar>
         </AppBar>
     );

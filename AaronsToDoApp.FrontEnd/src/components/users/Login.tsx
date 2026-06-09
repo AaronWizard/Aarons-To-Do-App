@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { Alert, Box, Button, CircularProgress, TextField, Typography } from "@mui/material";
+import {
+    Alert,
+    Box,
+    Button,
+    TextField,
+    Typography
+} from "@mui/material";
 
-import { userService } from "../../services/user_service";
+import { useAuth } from "../auth/useAuth";
 import { ApiError } from "../../utils/errors";
 
 interface LoginProps {
@@ -23,6 +29,7 @@ const ErrorState = {
 type ErrorState = (typeof ErrorState)[keyof typeof ErrorState];
 
 export default function Login({ nextURL }: LoginProps) {
+    const { login } = useAuth();
     const navigate = useNavigate();
 
     const [form, setForm] = useState<FormState>({ email: '', password: '' });
@@ -31,7 +38,7 @@ export default function Login({ nextURL }: LoginProps) {
 
     const loginMutation = useMutation({
         mutationFn: async () => {
-            return userService.login(form.email, form.password)
+            return login(form.email, form.password);
         },
         onSuccess: () => {
             navigate(nextURL);
@@ -108,22 +115,14 @@ export default function Login({ nextURL }: LoginProps) {
                 autoFocus
             />
 
-            {
-                loginMutation.isPending ?
-                    <CircularProgress
-                        sx={{ marginLeft: "auto", marginRight: 3 }} size={30}
-                    />
-                    :
-                    <Button
-                        variant="contained"
-                        sx={{ marginLeft: "auto" }}
-                        onClick={handleLogin}
-                        disabled={loginMutation.isPending}
-                    >
-                        Log In
-                    </Button>
-            }
-
+            <Button
+                variant="contained"
+                sx={{ marginLeft: "auto" }}
+                onClick={handleLogin}
+                disabled={loginMutation.isPending}
+            >
+                {loginMutation.isPending ? 'Logging In' : 'Log In'}
+            </Button>
         </Box>
     );
 }

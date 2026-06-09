@@ -19,14 +19,15 @@ export const apiClient = axios.create({
 const ACCESS_TOKEN_KEY = 'access_token';
 const REFRESH_TOKEN_KEY = 'refresh_token';
 
-const getAccessToken = () => localStorage.getItem(ACCESS_TOKEN_KEY);
-
 export const tokenStorage = {
     setTokens: (tokens: AuthTokensDto) => {
         localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
         localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
     },
+
+    getAccessToken: () => localStorage.getItem(ACCESS_TOKEN_KEY),
     getRefreshToken: () => localStorage.getItem(REFRESH_TOKEN_KEY),
+
     clearTokens: () => {
         localStorage.removeItem(ACCESS_TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
@@ -38,7 +39,7 @@ const bearerAuthorization = (token: string) => `Bearer ${token}`;
 // Intercept requests to attach access token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = getAccessToken();
+        const token = tokenStorage.getAccessToken();
         if (token && config.headers) {
             config.headers.Authorization = bearerAuthorization(token);
         }
