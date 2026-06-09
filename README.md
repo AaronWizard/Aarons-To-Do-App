@@ -84,4 +84,6 @@ Note that since user accounts are implemented using the Identity Framework, it w
 
 The front-end lacks some amount of polish in its visuals and user experience.
 
+The API lacks versioning.
+
 Authentication is done using JWT access tokens and refresh tokens sent by the API in the response body of its login endpoint, and are stored in session storage in the front-end app. During development I learned that this method is out of date and vulnerable to XSS attacks, with new token handling strategies available. However, by the time I learned this I had already built the majority of the full application. I made the decision to postpone switching away from my current token handling strategy due to time constraints.
