@@ -5,13 +5,14 @@ import Box from '@mui/material/Box';
 
 import { AuthProvider } from './components/auth/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
+import PublicOnlyRoute from './components/auth/PublicOnlyRoute';
 
 import Header from './components/Header';
 import Footer from './components/Footer';
 
 import TasksMain from './components/tasks/TasksMain';
 import Login from './components/users/Login';
-import PublicOnlyRoute from './components/auth/PublicOnlyRoute';
+import Register from './components/users/Register';
 
 export default function App() {
   return (
@@ -31,7 +32,12 @@ export default function App() {
                 } />
                 <Route path="/login" element={
                   <PublicOnlyRoute>
-                    <Login nextURL='/' />
+                    <Login nextUrl='/' registerUrl='/register' />
+                  </PublicOnlyRoute>
+                } />
+                <Route path="/register" element={
+                  <PublicOnlyRoute>
+                    <Register loginUrl='/login' />
                   </PublicOnlyRoute>
                 } />
               </Routes>
