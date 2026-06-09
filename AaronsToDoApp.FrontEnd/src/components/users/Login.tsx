@@ -11,6 +11,7 @@ import {
 
 import { useAuth } from "../auth/useAuth";
 import { ApiError } from "../../utils/errors";
+import { FormStatus } from "../../utils/form_state";
 
 interface LoginProps {
     nextURL: string;
@@ -21,20 +22,13 @@ interface FormState {
     password: string;
 }
 
-const ErrorState = {
-    none: 'none',
-    login: 'login',
-    other: 'other'
-} as const;
-type ErrorState = (typeof ErrorState)[keyof typeof ErrorState];
-
 export default function Login({ nextURL }: LoginProps) {
     const { login } = useAuth();
     const navigate = useNavigate();
 
     const [form, setForm] = useState<FormState>({ email: '', password: '' });
 
-    const [errorState, setErrorState] = useState<ErrorState>(ErrorState.none);
+    const [formStatus, setFormStatus] = useState<FormStatus>(FormStatus.ok);
 
     const loginMutation = useMutation({
         mutationFn: async () => {
@@ -46,17 +40,17 @@ export default function Login({ nextURL }: LoginProps) {
         onError: (error) => {
             const apiError = error as ApiError;
             if (apiError && apiError.isClientError()) {
-                setErrorState(ErrorState.login);
+                setFormStatus(FormStatus.validationError);
             }
             else {
-                setErrorState(ErrorState.other);
+                setFormStatus(FormStatus.otherError);
             }
         }
     });
 
     function handleLogin() {
         if (!form.email.trim() || !form.password.trim()) {
-            setErrorState(ErrorState.login);
+            setFormStatus(FormStatus.validationError);
             return;
         }
         loginMutation.mutate();
@@ -76,11 +70,11 @@ export default function Login({ nextURL }: LoginProps) {
             </Typography>
 
             {
-                (errorState != ErrorState.none) &&
+                (formStatus != FormStatus.ok) &&
                 <Alert severity="error">
                     {
                         (
-                            (errorState == ErrorState.login)
+                            (formStatus == FormStatus.validationError)
                             && 'Invalid username or password.'
                         )
                         || 'An error occurred. Please try again later.'
@@ -96,7 +90,7 @@ export default function Login({ nextURL }: LoginProps) {
                     e => setForm((f) => ({ ...f, email: e.target.value }))
                 }
                 disabled={loginMutation.isPending}
-                error={errorState == ErrorState.login}
+                error={formStatus == FormStatus.validationError}
                 required
                 fullWidth
                 autoFocus
@@ -109,7 +103,7 @@ export default function Login({ nextURL }: LoginProps) {
                     e => setForm((f) => ({ ...f, password: e.target.value }))
                 }
                 disabled={loginMutation.isPending}
-                error={errorState == ErrorState.login}
+                error={formStatus == FormStatus.validationError}
                 required
                 fullWidth
                 autoFocus
