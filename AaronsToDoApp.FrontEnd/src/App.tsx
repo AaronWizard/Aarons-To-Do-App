@@ -11,6 +11,7 @@ import Footer from './components/Footer';
 
 import TasksMain from './components/tasks/TasksMain';
 import Login from './components/users/Login';
+import PublicOnlyRoute from './components/auth/PublicOnlyRoute';
 
 export default function App() {
   return (
@@ -24,9 +25,15 @@ export default function App() {
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={
-                  <ProtectedRoute><TasksMain /></ProtectedRoute>
+                  <ProtectedRoute>
+                    <TasksMain />
+                  </ProtectedRoute>
                 } />
-                <Route path="/login" element={<Login nextURL='/' />} />
+                <Route path="/login" element={
+                  <PublicOnlyRoute>
+                    <Login nextURL='/' />
+                  </PublicOnlyRoute>
+                } />
               </Routes>
             </BrowserRouter>
           </Container>
