@@ -8,6 +8,7 @@ import { rejectAPIError } from "../utils/errors";
 const API_URL = import.meta.env.VITE_API_URL;
 const TIMEOUT_MS = import.meta.env.VITE_API_TIMEOUT_MS;
 
+/** The app's main API client. */
 export const apiClient = axios.create({
     baseURL: API_URL,
     headers: { 'Content-Type': 'application/json' },
@@ -143,6 +144,10 @@ apiClient.interceptors.response.use(
     }
 );
 
+/**
+ * Include this in the parameters to a call on `apiClient` to have it skip token
+ * refreshing.
+ */
 export const apiSkipAuthRefresh:
     AxiosRequestConfig & { _skipAuthRefresh?: boolean } = {
     _skipAuthRefresh: true
