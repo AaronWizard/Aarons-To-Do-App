@@ -28,11 +28,10 @@ export default function TasksMain() {
                 sx={{
                     display: 'flex',
                     justifyContent: 'space-between',
-                    alignItems: 'center',
-                    mb: 2,
+                    alignItems: 'center'
                 }}
             >
-                <Typography component="h2">
+                <Typography component="h2" variant="h5">
                     My Tasks
                 </Typography>
                 <Button
