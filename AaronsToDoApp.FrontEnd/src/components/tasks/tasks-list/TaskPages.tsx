@@ -7,8 +7,6 @@ import { tasksService } from '../../../services/task_service';
 import TaskList from './TaskList';
 import PageNav from '../../PageNav';
 
-const TASK_ITEM_HEIGHT = 60;
-
 interface TaskPagesProps {
     pageSize: number,
     /**
@@ -48,7 +46,7 @@ export default function TaskPages(
 
     if (isPending) {
         return (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <CircularProgress />
             </Box>
         );
@@ -56,7 +54,7 @@ export default function TaskPages(
 
     if (error && !pagedData) {
         return (
-            <Box sx={{ textAlign: 'center', py: 6 }}>
+            <Box sx={{ textAlign: 'center' }}>
                 <Typography color="error">Failed to load tasks.</Typography>
             </Box>
         );
@@ -70,14 +68,13 @@ export default function TaskPages(
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
-                mb: 1,
                 height: 22
             }}>
                 {isFetching && !isPending && <CircularProgress size={22} />}
             </Box>
 
             {error && pagedData && (
-                <Box sx={{ mb: 2, textAlign: 'center' }}>
+                <Box sx={{ textAlign: 'center' }}>
                     <Typography color="error">
                         Failed to update tasks. Showing previously loaded data.
                     </Typography>
@@ -85,7 +82,7 @@ export default function TaskPages(
             )}
 
             {/* Fixed page size for stable UI. */}
-            <Box sx={{ minHeight: pageSize * TASK_ITEM_HEIGHT }}>
+            <Box>
                 <TaskList
                     tasks={pagedData?.items ?? []}
                     onUpdated={onUpdated}
