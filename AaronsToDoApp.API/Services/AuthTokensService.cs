@@ -15,6 +15,12 @@ namespace AaronsToDoApp.API.Services;
 
 public partial class AuthTokensService
 {
+    public record AuthInfo(
+        string accessToken,
+        string refreshToken,
+        CookieOptions refreshTokenCookieOptions
+    );
+
     private readonly UserManager<IdentityUser> _userManager;
     private readonly AppDbContext _database;
     private readonly AuthenticationOptions _authOptions;
@@ -29,7 +35,7 @@ public partial class AuthTokensService
         _authOptions = authOptions.Value;
     }
 
-    public async Task<AuthTokensDto> LoginAsync(IdentityUser user)
+    public async Task<AuthInfo> LoginAsync(IdentityUser user)
     {
         var now = DateTime.UtcNow;
         // Log out of other sessions.
@@ -41,13 +47,13 @@ public partial class AuthTokensService
             ).ToListAsync();
         existingTokens.ForEach(t => t.RevokedUTC = now);
 
-        var authTokens = await CreateAuthTokensAsync(user);
+        var authTokens = await CreateAuthInfo(user);
         await _database.SaveChangesAsync();
 
         return authTokens;
     }
 
-    public async Task<AuthTokensDto> RefreshAccessAsync(string refreshToken)
+    public async Task<AuthInfo> RefreshAccessAsync(string refreshToken)
     {
         var existingToken = await _database.RefreshTokens
             .Include(t => t.User)
@@ -64,7 +70,7 @@ public partial class AuthTokensService
         // Log out of given session.
         existingToken.RevokedUTC = DateTime.UtcNow;
 
-        var authTokens = await CreateAuthTokensAsync(existingToken.User!);
+        var authTokens = await CreateAuthInfo(existingToken.User!);
         await _database.SaveChangesAsync();
 
         return authTokens;
@@ -87,11 +93,24 @@ public partial class AuthTokensService
         await _database.SaveChangesAsync();
     }
 
-    private async Task<AuthTokensDto> CreateAuthTokensAsync(IdentityUser user)
+    private async Task<AuthInfo> CreateAuthInfo(IdentityUser user)
     {
+        var expiryTime = DateTime.UtcNow.AddHours(
+            _authOptions.RefreshTokenLifetimeHours
+        );
+
         var accessToken = CreateAccessToken(user);
-        var refreshToken = await CreateRefreshTokenAsync(user.Id);
-        return new AuthTokensDto(accessToken, refreshToken);
+        var refreshToken = await CreateRefreshTokenAsync(user.Id, expiryTime);
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = _authOptions.UseSSLForCookies,
+            SameSite = SameSiteMode.Strict,
+            Expires = expiryTime
+        };
+
+        return new AuthInfo(accessToken, refreshToken, cookieOptions);
     }
 
     private string CreateAccessToken(IdentityUser user)
@@ -121,7 +140,9 @@ public partial class AuthTokensService
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 
-    private async Task<string> CreateRefreshTokenAsync(string userId)
+    private async Task<string> CreateRefreshTokenAsync(
+        string userId, DateTime expiryTime
+    )
     {
         var randomNumber = new byte[64];
         using var rng = RandomNumberGenerator.Create();
@@ -132,9 +153,7 @@ public partial class AuthTokensService
         {
             Token = tokenValue,
             UserId = userId,
-            ExpiresUTC = DateTime.UtcNow.AddHours(
-                 _authOptions.RefreshTokenLifetimeHours
-             )
+            ExpiresUTC = expiryTime
         };
         _database.RefreshTokens.Add(newToken);
 

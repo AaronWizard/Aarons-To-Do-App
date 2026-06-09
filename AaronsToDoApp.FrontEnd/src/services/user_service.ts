@@ -1,9 +1,8 @@
-import { apiClient, apiSkipAuthRefresh, tokenStorage } from "../api/api";
+import { apiClient, apiSkipAuthRefresh, setAccessToken } from "../api/api";
 import type {
-    AuthTokensDto,
+    AccessTokenDto,
     LoginDto,
     PasswordRequirementsDto,
-    RefreshTokenDto,
     RegisterDto
 } from "../api/types";
 
@@ -14,26 +13,20 @@ const METHOD_REGISTER = 'users/register';
 
 class UserService {
     async login(email: string, password: string) {
-        const { data } = await apiClient.post<AuthTokensDto>(
+        const { data } = await apiClient.post<AccessTokenDto>(
             METHOD_LOGIN,
             { email: email, password: password } as LoginDto,
             apiSkipAuthRefresh
         );
-        tokenStorage.setTokens(data);
+        setAccessToken(data.accessToken);
     }
 
     async logout() {
         try {
-            const refreshToken = tokenStorage.getRefreshToken();
-            if (refreshToken) {
-                await apiClient.post(
-                    METHOD_REVOKE_REFRESH,
-                    { refreshToken: refreshToken } as RefreshTokenDto
-                )
-            }
+            await apiClient.post(METHOD_REVOKE_REFRESH)
         }
         finally {
-            tokenStorage.clearTokens();
+            setAccessToken(null);
         }
     }
 

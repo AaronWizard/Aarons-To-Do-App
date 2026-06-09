@@ -45,9 +45,9 @@ public class UsersController(
     }
 
     [HttpPost("[action]")]
-    [ProducesResponseType(typeof(AuthTokensDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AccessTokenDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<ActionResult<AuthTokensDto>> Login(
+    public async Task<ActionResult<AccessTokenDto>> Login(
         [FromBody] LoginDto request)
     {
         var user = await usersService.GetUserForLogin(
@@ -59,47 +59,89 @@ public class UsersController(
         }
         else
         {
-            var authTokensDto = await authTokensService.LoginAsync(user);
-            return authTokensDto;
+            var authInfo = await authTokensService.LoginAsync(user);
+            return ReturnAccessToken(authInfo);
         }
     }
 
     [HttpPost("refresh-access")]
-    [ProducesResponseType(typeof(AuthTokensDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<AuthTokensDto>> RefreshAccess(
-        [FromBody] RefreshTokenDto refreshToken
-    )
+    [ProducesResponseType(typeof(AccessTokenDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AccessTokenDto>> RefreshAccess()
     {
-        try
+        if (TryGetRefreshToken(out var refreshToken))
         {
-            var authTokensDto = await authTokensService.RefreshAccessAsync(
-                refreshToken.RefreshToken
-            );
-            return authTokensDto;
+            try
+            {
+                var authInfo = await authTokensService.RefreshAccessAsync(
+                    refreshToken ?? string.Empty
+                );
+                return ReturnAccessToken(authInfo);
+            }
+            catch (SecurityTokenException)
+            {
+                return Unauthorized();
+            }
         }
-        catch (SecurityTokenException)
+        else
         {
-            return BadRequest();
+            return Unauthorized();
         }
+
     }
 
     [HttpPost("revoke-refresh-token")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RevokeRefreshToken(
-        [FromBody] RefreshTokenDto refreshToken
-    )
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> RevokeRefreshToken()
     {
-        try
+        if (TryGetRefreshToken(out var refreshToken))
         {
-            await authTokensService.RevokeRefreshTokenAsync(
-                refreshToken.RefreshToken);
-            return NoContent();
+            try
+            {
+                await authTokensService.RevokeRefreshTokenAsync(
+                    refreshToken ?? "");
+                ClearRefreshTokenCookie();
+                return NoContent();
+            }
+            catch (SecurityTokenException)
+            {
+                return Unauthorized();
+            }
         }
-        catch (SecurityTokenException)
+        else
         {
-            return BadRequest();
+            return Unauthorized();
         }
+    }
+
+    private const string RefreshTokenCookie = "AaronsToDoAppRefreshToken";
+
+    private AccessTokenDto ReturnAccessToken(AuthTokensService.AuthInfo info)
+    {
+        Response.Cookies.Append(
+            RefreshTokenCookie,
+            info.refreshToken,
+            info.refreshTokenCookieOptions
+        );
+        return new AccessTokenDto(info.accessToken);
+    }
+
+    private void ClearRefreshTokenCookie()
+    {
+        Response.Cookies.Delete(
+            RefreshTokenCookie,
+            new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            }
+        );
+    }
+
+    private bool TryGetRefreshToken(out string? token)
+    {
+        return Request.Cookies.TryGetValue(RefreshTokenCookie, out token);
     }
 }

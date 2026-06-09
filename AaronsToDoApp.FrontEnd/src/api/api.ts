@@ -1,7 +1,12 @@
 import axios, { AxiosError, type AxiosRequestConfig } from "axios";
-import type { AuthTokensDto, RefreshTokenDto } from "./types";
+import type { AccessTokenDto } from "./types";
 import { rejectAPIError } from "../utils/errors";
 
+let accessToken: string | null = null;
+/** Set the access token. */
+export const setAccessToken = (token: string | null) => { accessToken = token };
+/** Get the current access. token */
+export const getAccessToken = (): string | null => accessToken;
 
 // The API client
 
@@ -12,35 +17,16 @@ const TIMEOUT_MS = import.meta.env.VITE_API_TIMEOUT_MS;
 export const apiClient = axios.create({
     baseURL: API_URL,
     headers: { 'Content-Type': 'application/json' },
-    timeout: TIMEOUT_MS
+    timeout: TIMEOUT_MS,
+    withCredentials: true
 });
-
-// Helper functions for tokens
-
-const ACCESS_TOKEN_KEY = 'access_token';
-const REFRESH_TOKEN_KEY = 'refresh_token';
-
-export const tokenStorage = {
-    setTokens: (tokens: AuthTokensDto) => {
-        sessionStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
-        sessionStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-    },
-
-    getAccessToken: () => sessionStorage.getItem(ACCESS_TOKEN_KEY),
-    getRefreshToken: () => sessionStorage.getItem(REFRESH_TOKEN_KEY),
-
-    clearTokens: () => {
-        sessionStorage.removeItem(ACCESS_TOKEN_KEY);
-        sessionStorage.removeItem(REFRESH_TOKEN_KEY);
-    },
-};
 
 const bearerAuthorization = (token: string) => `Bearer ${token}`;
 
 // Intercept requests to attach access token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = tokenStorage.getAccessToken();
+        const token = getAccessToken();
         if (token && config.headers) {
             config.headers.Authorization = bearerAuthorization(token);
         }
@@ -109,18 +95,15 @@ apiClient.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const refreshToken = tokenStorage.getRefreshToken();
-                if (!refreshToken) {
-                    throw new Error('No refresh token');
-                }
                 // Call the refresh endpoint directly with axios to avoid
                 // interceptor loops
-                const response = await axios.post<AuthTokensDto>(
+                const response = await axios.post<AccessTokenDto>(
                     `${API_URL}/${METHOD_REFRESH}`,
-                    { refreshToken } as RefreshTokenDto
+                    {},
+                    { withCredentials: true }
                 );
-                tokenStorage.setTokens(response.data);
                 const accessToken = response.data.accessToken;
+                setAccessToken(response.data.accessToken);
 
                 if (originalRequest.headers) {
                     originalRequest.headers.Authorization
@@ -131,7 +114,7 @@ apiClient.interceptors.response.use(
             }
             catch (refreshError) {
                 processQueue(refreshError as AxiosError, null);
-                tokenStorage.clearTokens();
+                setAccessToken(null);
                 return rejectAPIError(refreshError);
             }
             finally {

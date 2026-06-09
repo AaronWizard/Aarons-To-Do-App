@@ -3,13 +3,8 @@ export interface LoginDto {
     password: string;
 }
 
-export interface AuthTokensDto {
+export interface AccessTokenDto {
     accessToken: string;
-    refreshToken: string;
-}
-
-export interface RefreshTokenDto {
-    refreshToken: string;
 }
 
 export interface PasswordRequirementsDto {

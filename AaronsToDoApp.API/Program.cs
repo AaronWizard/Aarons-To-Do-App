@@ -122,6 +122,7 @@ builder.Services.AddCors(options =>
                 AuthorizationHeader
             ])
             .WithMethods(["GET", "POST", "PUT", "DELETE"])
+            .AllowCredentials()
     );
 });
 

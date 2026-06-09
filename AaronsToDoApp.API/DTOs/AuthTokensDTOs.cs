@@ -1,4 +1,4 @@
 namespace AaronsToDoApp.API.DTOs;
 
-public record AuthTokensDto(string AccessToken, string RefreshToken);
+public record AccessTokenDto(string AccessToken);
 public record RefreshTokenDto(string RefreshToken);

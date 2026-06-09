@@ -1,6 +1,6 @@
 import { createContext, useState } from "react";
-import { tokenStorage } from "../../api/api";
 import { userService } from "../../services/user_service";
+import { getAccessToken } from "../../api/api";
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -13,7 +13,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(
-        () => !!tokenStorage.getAccessToken()
+        () => !!getAccessToken()
     );
     const [userEmail, setUserEmail] = useState<string | null>(null);
 

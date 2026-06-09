@@ -12,4 +12,6 @@ public class AuthenticationOptions
     public required int RefreshTokenLifetimeHours { get; set; }
 
     public required int ClockSkewMinutes { get; set; }
+
+    public bool UseSSLForCookies { get; set; }
 }
