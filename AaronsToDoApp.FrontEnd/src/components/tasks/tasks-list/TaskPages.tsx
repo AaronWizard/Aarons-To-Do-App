@@ -7,6 +7,8 @@ import { tasksService } from '../../../services/task_service';
 import TaskList from './TaskList';
 import PageNav from '../../PageNav';
 
+const PROGRESS_HEIGHT = 22;
+
 interface TaskPagesProps {
     pageSize: number,
     /**
@@ -68,9 +70,12 @@ export default function TaskPages(
             <Box sx={{
                 display: 'flex',
                 justifyContent: 'center',
-                height: 22
+                height: PROGRESS_HEIGHT
             }}>
-                {isFetching && !isPending && <CircularProgress size={22} />}
+                {
+                    isFetching && !isPending &&
+                    <CircularProgress size={PROGRESS_HEIGHT} />
+                }
             </Box>
 
             {error && pagedData && (
