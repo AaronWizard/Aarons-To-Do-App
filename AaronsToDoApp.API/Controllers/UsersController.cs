@@ -1,5 +1,8 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AaronsToDoApp.API.DTOs;
 using AaronsToDoApp.API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -112,6 +115,24 @@ public class UsersController(
         else
         {
             return Unauthorized();
+        }
+    }
+
+    [HttpGet("current-user")]
+    [Authorize]
+    [ProducesResponseType(typeof(UserInfoDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<UserInfoDto>> GetCurrentUserInfo()
+    {
+        var userId = User.FindFirstValue(JwtRegisteredClaimNames.Sub)!;
+        var userInfo = await usersService.GetUserInfoAsync(userId);
+        if (userInfo == null)
+        {
+            return Unauthorized();
+        }
+        else
+        {
+            return userInfo;
         }
     }
 
