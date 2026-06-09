@@ -31,14 +31,15 @@ public partial class AuthTokensService
 
     public async Task<AuthTokensDto> LoginAsync(IdentityUser user)
     {
+        var now = DateTime.UtcNow;
         // Log out of other sessions.
         var existingTokens = await _database.RefreshTokens
             .Where(t =>
                 (t.UserId == user.Id)
-                && (t.ExpiresUTC <= DateTime.UtcNow)
+                && (t.ExpiresUTC <= now)
                 && (t.RevokedUTC == null)
             ).ToListAsync();
-        existingTokens.ForEach(t => t.RevokedUTC = DateTime.UtcNow);
+        existingTokens.ForEach(t => t.RevokedUTC = now);
 
         var authTokens = await CreateAuthTokensAsync(user);
         await _database.SaveChangesAsync();
