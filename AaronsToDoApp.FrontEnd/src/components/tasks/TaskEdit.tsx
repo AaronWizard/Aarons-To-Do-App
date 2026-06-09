@@ -4,6 +4,7 @@ import {
     Alert,
     Box,
     Button,
+    CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -124,7 +125,8 @@ export default function TaskEdit({
     });
 
     // User saved.
-    function handleSave() {
+    function handleSubmit(e: React.SubmitEvent) {
+        e.preventDefault();
         if (!form.name.trim()) {
             setNameError(true);
             return;
@@ -143,10 +145,16 @@ export default function TaskEdit({
         <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
             <DialogTitle>{isCreateMode ? 'Add Task' : 'Edit Task'}</DialogTitle>
 
-            <DialogContent>
-                <Box sx={{
-                    display: 'flex', flexDirection: 'column', gap: 2, pt: 1
-                }}>
+            <DialogContent sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center'
+            }}>
+                <Box
+                    id="edit-task-form"
+                    component="form"
+                    onSubmit={handleSubmit}
+                    noValidate>
                     {
                         otherError &&
                         <Alert severity="error">
@@ -155,7 +163,9 @@ export default function TaskEdit({
                     }
 
                     <TextField
+                        id="name"
                         label="Name"
+                        name="name"
                         value={form.name}
                         onChange={(e) => {
                             setForm((f) => ({ ...f, name: e.target.value }));
@@ -163,33 +173,43 @@ export default function TaskEdit({
                                 setNameError(false);
                             }
                         }}
+                        disabled={saveMutation.isPending}
                         error={nameError}
-                        helperText={nameError ? 'Name is required.' : ''}
                         required
                         fullWidth
+                        margin="normal"
                         autoFocus
+                        helperText={nameError ? 'Name is required.' : ''}
                     />
 
                     <TextField
+                        id="deadline"
                         label="Deadline"
+                        name="deadline"
                         type="date"
                         value={form.deadline}
                         onChange={(e) =>
                             setForm((f) => ({ ...f, deadline: e.target.value }))
                         }
+                        disabled={saveMutation.isPending}
                         fullWidth
+                        margin="normal"
                         slotProps={{ inputLabel: { shrink: true } }}
                     />
 
                     <TextField
+                        id="description"
                         label="Description"
+                        name="description"
                         value={form.description}
                         onChange={(e) =>
                             setForm((f) =>
                                 ({ ...f, description: e.target.value })
                             )
                         }
+                        disabled={saveMutation.isPending}
                         fullWidth
+                        margin="normal"
                         multiline
                         rows={3}
                     />
@@ -198,6 +218,8 @@ export default function TaskEdit({
                         <FormControlLabel
                             control={
                                 <Switch
+                                    id="completed"
+                                    name="completed"
                                     checked={form.completed}
                                     onChange={(e) =>
                                         setForm((f) => ({
@@ -217,13 +239,13 @@ export default function TaskEdit({
                     Cancel
                 </Button>
                 <Button
-                    variant="contained"
-                    onClick={handleSave}
+                    type="submit" form="edit-task-form"
                     disabled={saveMutation.isPending}
                 >
                     {
-                        saveMutation.isPending ? 'Saving'
-                            : isCreateMode ? 'Add' : 'Save'
+                        saveMutation.isPending ?
+                            <CircularProgress size={24} color="inherit" />
+                            : (isCreateMode ? 'Add' : 'Save')
                     }
                 </Button>
             </DialogActions>
