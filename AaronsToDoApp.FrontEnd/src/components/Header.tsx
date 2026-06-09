@@ -14,8 +14,8 @@ export default function Header() {
 
     return (
         <AppBar position="static">
-            <Toolbar>
-                <Typography variant="h6" component="div" sx={{ mr: 2, flexGrow: 1 }}>
+            <Toolbar sx={{ gap: 1 }}>
+                <Typography variant="h5" component="h1" sx={{ flexGrow: 1 }}>
                     Aaron's To-Do App
                 </Typography>
                 {isAuthenticated && <UserEmailLabel />}
