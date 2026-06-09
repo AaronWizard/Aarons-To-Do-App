@@ -18,6 +18,7 @@ export default function Logout() {
     return (
         <Button
             color="inherit"
+            variant="outlined"
             onClick={handleLogout}
             disabled={logoutMutation.isPending}
         >

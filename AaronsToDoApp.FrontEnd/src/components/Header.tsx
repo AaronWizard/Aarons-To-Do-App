@@ -4,8 +4,10 @@ import {
     Typography
 } from '@mui/material';
 
-import Logout from './users/Logout';
 import { useAuth } from './auth/useAuth';
+
+import UserEmailLabel from './users/UserEmailLabel';
+import Logout from './users/Logout';
 
 export default function Header() {
     const { isAuthenticated } = useAuth();
@@ -13,9 +15,10 @@ export default function Header() {
     return (
         <AppBar position="static">
             <Toolbar>
-                <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+                <Typography variant="h6" component="div" sx={{ mr: 2, flexGrow: 1 }}>
                     Aaron's To-Do App
                 </Typography>
+                {isAuthenticated && <UserEmailLabel />}
                 {isAuthenticated && <Logout />}
             </Toolbar>
         </AppBar>
