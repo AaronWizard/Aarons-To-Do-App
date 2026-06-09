@@ -6,7 +6,6 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
-    Divider,
     FormControlLabel,
     Switch,
     Typography
@@ -69,82 +68,78 @@ export default function TaskDetails({
     return (
         <>
             <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Task Details</DialogTitle>
+                <DialogTitle>{task.name}</DialogTitle>
 
-                <DialogContent>
-                    <Box sx={{
-                        display: 'flex', flexDirection: 'column', gap: 2, pt: 1
-                    }}>
-                        <Typography variant="h6">{task.name}</Typography>
-
-                        <Divider />
-
-                        <Box>
-                            <Typography
-                                variant="caption" color="text.secondary"
-                            >
-                                Created
-                            </Typography>
-                            <Typography>
-                                {formatDateString(task.createdUTC)}
-                            </Typography>
-                        </Box>
-
-                        <Box>
-                            <Typography
-                                variant="caption" color="text.secondary"
-                            >
-                                Deadline
-                            </Typography>
-                            <Typography>
-                                {
-                                    task.deadlineUTC ?
-                                        formatDateString(task.deadlineUTC)
-                                        : 'None'
-                                }
-                            </Typography>
-                        </Box>
-
-                        <Box>
-                            <Typography
-                                variant="caption" color="text.secondary"
-                            >
-                                Description
-                            </Typography>
-                            <Typography sx={{ whiteSpace: 'pre-wrap' }}>
-                                {task.description ?? 'None'}
-                            </Typography>
-                        </Box>
-
-                        <Box>
-                            <Typography
-                                variant="caption" color="text.secondary"
-                            >
-                                Completed
-                            </Typography>
-                            <Typography>
-                                {
-                                    task.completedUTC ?
-                                        formatDateString(task.completedUTC)
-                                        : 'No'
-                                }
-                            </Typography>
-                        </Box>
-
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={task.completedUTC !== null}
-                                    onChange={handleToggleComplete}
-                                    disabled={isBusy}
-                                />
-                            }
-                            label="Completed"
-                        />
+                <DialogContent sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2
+                }}>
+                    <Box>
+                        <Typography
+                            variant="caption" color="text.secondary"
+                        >
+                            Created
+                        </Typography>
+                        <Typography>
+                            {formatDateString(task.createdUTC)}
+                        </Typography>
                     </Box>
+
+                    <Box>
+                        <Typography
+                            variant="caption" color="text.secondary"
+                        >
+                            Deadline
+                        </Typography>
+                        <Typography>
+                            {
+                                task.deadlineUTC ?
+                                    formatDateString(task.deadlineUTC)
+                                    : 'None'
+                            }
+                        </Typography>
+                    </Box>
+
+                    <Box>
+                        <Typography
+                            variant="caption" color="text.secondary"
+                        >
+                            Description
+                        </Typography>
+                        <Typography sx={{ whiteSpace: 'pre-wrap' }}>
+                            {task.description ?? 'None'}
+                        </Typography>
+                    </Box>
+
+                    <Box>
+                        <Typography
+                            variant="caption" color="text.secondary"
+                        >
+                            Completed
+                        </Typography>
+                        <Typography>
+                            {
+                                task.completedUTC ?
+                                    formatDateString(task.completedUTC)
+                                    : 'No'
+                            }
+                        </Typography>
+                    </Box>
+
+                    <FormControlLabel
+                        control={
+                            <Switch
+                                checked={task.completedUTC !== null}
+                                onChange={handleToggleComplete}
+                                disabled={isBusy}
+                            />
+                        }
+                        label="Completed"
+                    />
                 </DialogContent>
 
-                <DialogActions sx={{ px: 3, pb: 2 }}>
+                <DialogActions>
                     <Button
                         onClick={() => setIsEditOpen(true)}
                         disabled={isBusy}
