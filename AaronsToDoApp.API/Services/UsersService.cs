@@ -1,3 +1,4 @@
+using AaronsToDoApp.API.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 
@@ -45,5 +46,20 @@ public class UsersService
         }
 
         return user;
+    }
+
+    public async Task<UserInfoDto?> GetUserInfoAsync(string userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return null;
+        }
+        else
+        {
+            return new UserInfoDto(
+                user.NormalizedEmail?.ToLowerInvariant() ?? ""
+            );
+        }
     }
 }

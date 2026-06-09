@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import PublicOnlyRoute from "./auth/PublicOnlyRoute";
 import TasksMain from "./tasks/TasksMain";
@@ -24,6 +24,8 @@ export default function Main() {
                         <Register loginUrl='/login' />
                     </PublicOnlyRoute>
                 } />
+
+                <Route path="*" element={<Navigate to="/" />} />
             </Routes>
         </BrowserRouter>
     );
