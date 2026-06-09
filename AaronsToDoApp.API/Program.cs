@@ -14,7 +14,8 @@ const string ConnectionStringKey = "AaronsToDoApp";
 const string PasswordKey = "Password";
 
 const string AllowedOriginsPolicy = "AllowedOrigins";
-const string ContentTypeHeaderField = "content-type";
+const string ContentTypeHeader = "content-type";
+const string AuthorizationHeader = "Authorization";
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -114,8 +115,13 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy(
         name: AllowedOriginsPolicy,
-        policy => policy.WithOrigins([frontEndOptions.BaseUrl])
-            .WithHeaders([ContentTypeHeaderField])
+        policy => policy
+            .WithOrigins([frontEndOptions.BaseUrl])
+            .WithHeaders([
+                ContentTypeHeader,
+                AuthorizationHeader
+            ])
+            .WithMethods(["GET", "POST", "PUT", "DELETE"])
     );
 });
 
