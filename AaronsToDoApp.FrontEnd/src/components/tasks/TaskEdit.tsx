@@ -19,7 +19,7 @@ import type {
     UpdateTaskRequestDto,
 } from '../../api/types';
 import { tasksService } from '../../services/task_service';
-import { dateToInputValue, inputValueToDate }
+import { utcStringToInputValue, inputValueToUTCDateString }
     from '../../utils/dates';
 
 interface TaskEditProps {
@@ -46,7 +46,7 @@ function buildInitialForm(task?: ToDoTaskDto): FormState {
     if (task) {
         return {
             name: task.name,
-            deadline: dateToInputValue(task.deadlineUTC),
+            deadline: utcStringToInputValue(task.deadlineUTC),
             description: task.description ?? '',
             completed: task.completedUTC !== null,
         };
@@ -80,7 +80,7 @@ export default function TaskEdit({
 
     const saveMutation = useMutation({
         mutationFn: async () => {
-            const deadlineDate = inputValueToDate(form.deadline);
+            const deadlineDate = inputValueToUTCDateString(form.deadline);
             const trimmedDescription = form.description.trim() || null;
 
             if (isCreateMode) {
@@ -96,7 +96,7 @@ export default function TaskEdit({
                 // completedUTC if it already exists. Otherwise use the current
                 // time.
                 const completedUTC = form.completed
-                    ? (task.completedUTC ?? new Date())
+                    ? (task.completedUTC ?? new Date().toISOString())
                     : null;
                 const data: UpdateTaskRequestDto = {
                     name: form.name.trim(),

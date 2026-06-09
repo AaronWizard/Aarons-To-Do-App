@@ -36,21 +36,21 @@ export interface PagedDto<T> {
 export interface ToDoTaskDto {
     id: number;
     name: string;
-    createdUTC: Date;
-    completedUTC: Date | null;
-    deadlineUTC: Date | null;
+    createdUTC: string;
+    completedUTC: string | null;
+    deadlineUTC: string | null;
     description: string | null;
 }
 
 export interface CreateTaskRequestDto {
     name: string;
-    deadlineUTC: Date | null;
+    deadlineUTC: string | null;
     description: string | null;
 }
 
 export interface UpdateTaskRequestDto {
     name: string;
-    completedUTC: Date | null;
-    deadlineUTC: Date | null;
+    completedUTC: string | null;
+    deadlineUTC: string | null;
     description: string | null;
 }

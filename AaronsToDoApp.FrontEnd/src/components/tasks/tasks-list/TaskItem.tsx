@@ -16,7 +16,7 @@ import { useState } from 'react';
 import type { ToDoTaskDto, UpdateTaskRequestDto }
     from '../../../api/types';
 import { tasksService } from '../../../services/task_service';
-import { formatDate } from '../../../utils/dates';
+import { formatDateString } from '../../../utils/dates';
 
 import styles from './TaskItem.module.scss';
 import ConfirmDeleteTask from '../ConfirmDeleteTask';
@@ -30,11 +30,16 @@ interface TaskItemProps {
 }
 
 function isOverdue(task: ToDoTaskDto): boolean {
-    return (
-        (task.completedUTC === null)
-        && (task.deadlineUTC !== null)
-        && (task.deadlineUTC < new Date())
-    );
+    if (task.completedUTC !== null) {
+        return false;
+    }
+    else if (task.deadlineUTC !== null) {
+        const deadlineDate = new Date(task.deadlineUTC);
+        return deadlineDate < new Date();
+    }
+    else {
+        return false;
+    }
 }
 
 export default function TaskItem({ task, onUpdated }: TaskItemProps) {
@@ -54,7 +59,7 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
         try {
             const data: UpdateTaskRequestDto = {
                 name: task.name,
-                completedUTC: completed ? null : new Date(),
+                completedUTC: completed ? null : new Date().toISOString(),
                 deadlineUTC: task.deadlineUTC,
                 description: task.description,
             };
@@ -103,7 +108,7 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
 
                         {task.deadlineUTC && (
                             <Typography component="span" variant="caption">
-                                Due: {formatDate(task.deadlineUTC)}
+                                Due: {formatDateString(task.deadlineUTC)}
                             </Typography>
                         )}
                     </Box>

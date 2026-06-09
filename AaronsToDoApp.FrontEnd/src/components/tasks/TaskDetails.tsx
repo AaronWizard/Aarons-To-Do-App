@@ -14,7 +14,7 @@ import {
 
 import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../api/types';
 import { tasksService } from '../../services/task_service';
-import { formatDate } from '../../utils/dates';
+import { formatDateString } from '../../utils/dates';
 import ConfirmDeleteTask from './ConfirmDeleteTask';
 import TaskEdit from './TaskEdit';
 
@@ -42,7 +42,8 @@ export default function TaskDetails({
         try {
             const data: UpdateTaskRequestDto = {
                 name: task.name,
-                completedUTC: task.completedUTC ? null : new Date(),
+                completedUTC: task.completedUTC ?
+                    null : new Date().toISOString(),
                 deadlineUTC: task.deadlineUTC,
                 description: task.description,
             };
@@ -85,7 +86,7 @@ export default function TaskDetails({
                                 Created
                             </Typography>
                             <Typography>
-                                {formatDate(task.createdUTC)}
+                                {formatDateString(task.createdUTC)}
                             </Typography>
                         </Box>
 
@@ -98,7 +99,8 @@ export default function TaskDetails({
                             <Typography>
                                 {
                                     task.deadlineUTC ?
-                                        formatDate(task.deadlineUTC) : 'None'
+                                        formatDateString(task.deadlineUTC)
+                                        : 'None'
                                 }
                             </Typography>
                         </Box>
@@ -123,7 +125,8 @@ export default function TaskDetails({
                             <Typography>
                                 {
                                     task.completedUTC ?
-                                        formatDate(task.completedUTC) : 'No'
+                                        formatDateString(task.completedUTC)
+                                        : 'No'
                                 }
                             </Typography>
                         </Box>

@@ -1,32 +1,29 @@
-const dateFormatter = new Intl.DateTimeFormat('en-CA', {
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
     month: 'short',
     day: 'numeric',
     year: 'numeric'
 });
 
-export function formatDate(date: Date): string {
-    return dateFormatter.format(date);
+export function formatDateString(date: string): string {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) {
+        throw new Error(`Invalid date value: ${date}`);
+    }
+    return dateFormatter.format(d);
 }
 
-
-/** Converts a Date to a "YYYY-MM-DD" input string. */
-export function dateToInputValue(date: Date | null): string {
+/** Converts an UTC ISO string to a "YYYY-MM-DD" input value. */
+export function utcStringToInputValue(date: string | null): string {
     if (!date) {
         return ''
     };
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
+    return date.slice(0, 10); // ISO 8601 always starts with "YYYY-MM-DD"
 }
 
-/** Converts a "YYYY-MM-DD" input string back to a Date. */
-export function inputValueToDate(value: string): Date | null {
+/** Converts a "YYYY-MM-DD" input value to a UTC ISO string (midnight UTC). */
+export function inputValueToUTCDateString(value: string): string | null {
     if (!value) {
         return null
     };
-    const [year, month, date] = value.split('-').map(Number);
-    return new Date(year, month - 1, date);
+    return `${value}T00:00:00.000Z`;
 }
