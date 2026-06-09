@@ -5,8 +5,8 @@ import { rejectAPIError } from "../utils/errors";
 
 // The API client
 
-const API_URL = 'http://localhost:5248/api';
-const TIMEOUT_MS = 10000;
+const API_URL = import.meta.env.VITE_API_URL;
+const TIMEOUT_MS = import.meta.env.VITE_API_TIMEOUT_MS;
 
 export const apiClient = axios.create({
     baseURL: API_URL,
