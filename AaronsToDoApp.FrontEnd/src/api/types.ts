@@ -21,6 +21,10 @@ export interface RegisterDto {
     password: string;
 }
 
+export interface UserInfoDto {
+    email: string;
+}
+
 export interface PagedDto<T> {
     items: T[];
     page: number;

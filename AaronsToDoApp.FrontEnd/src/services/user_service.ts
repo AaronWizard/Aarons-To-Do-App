@@ -1,15 +1,22 @@
-import { apiClient, apiSkipAuthRefresh, setAccessToken } from "../api/api";
+import {
+    apiClient,
+    apiSkipAuthRefresh,
+    refreshAPIAccess,
+    setAPIAccessToken
+} from "../api/api";
 import type {
     AccessTokenDto,
     LoginDto,
     PasswordRequirementsDto,
-    RegisterDto
+    RegisterDto,
+    UserInfoDto
 } from "../api/types";
 
 const METHOD_LOGIN = 'users/login';
 const METHOD_REVOKE_REFRESH = 'users/revoke-refresh-token';
 const METHOD_PASSWORD_REQUIREMENTS = 'users/password-requirements';
 const METHOD_REGISTER = 'users/register';
+const METHOD_CURRENT_USER_INFO = 'users/current-user';
 
 class UserService {
     async login(email: string, password: string) {
@@ -18,7 +25,13 @@ class UserService {
             { email: email, password: password } as LoginDto,
             apiSkipAuthRefresh
         );
-        setAccessToken(data.accessToken);
+        setAPIAccessToken(data.accessToken);
+    }
+
+    async refreshAccess(): Promise<string> {
+        const token = await refreshAPIAccess();
+        setAPIAccessToken(token);
+        return token;
     }
 
     async logout() {
@@ -26,7 +39,7 @@ class UserService {
             await apiClient.post(METHOD_REVOKE_REFRESH)
         }
         finally {
-            setAccessToken(null);
+            setAPIAccessToken(null);
         }
     }
 
@@ -42,6 +55,13 @@ class UserService {
             METHOD_REGISTER,
             { email: email, password: password } as RegisterDto
         );
+    }
+
+    async getCurrentUserInfo(): Promise<UserInfoDto> {
+        const response = await apiClient.get<UserInfoDto>(
+            METHOD_CURRENT_USER_INFO,
+        );
+        return response.data;
     }
 }
 export const userService = new UserService();

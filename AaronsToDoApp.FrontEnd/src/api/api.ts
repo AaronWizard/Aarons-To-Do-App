@@ -2,11 +2,16 @@ import axios, { AxiosError, type AxiosRequestConfig } from "axios";
 import type { AccessTokenDto } from "./types";
 import { rejectAPIError } from "../utils/errors";
 
+// The API access token
+
 let accessToken: string | null = null;
-/** Set the access token. */
-export const setAccessToken = (token: string | null) => { accessToken = token };
-/** Get the current access. token */
-export const getAccessToken = (): string | null => accessToken;
+
+/** Set the API access token. */
+export const setAPIAccessToken = (token: string | null) => {
+    accessToken = token
+};
+
+const getAPIAccessToken = (): string | null => accessToken;
 
 // The API client
 
@@ -21,12 +26,35 @@ export const apiClient = axios.create({
     withCredentials: true
 });
 
+/**
+ * Include this in the parameters to a call on `apiClient` to have it skip token
+ * refreshing.
+ */
+export const apiSkipAuthRefresh:
+    AxiosRequestConfig & { _skipAuthRefresh?: boolean } = {
+    _skipAuthRefresh: true
+};
+
+const METHOD_REFRESH = 'users/refresh-access';
+/** Refreshes the user's access and gets a new access token. */
+export const refreshAPIAccess = async (): Promise<string> => {
+    // Call the refresh endpoint directly with axios to avoid interceptor loops.
+    const response = await axios.post<AccessTokenDto>(
+        `${API_URL}/${METHOD_REFRESH}`,
+        {},
+        { withCredentials: true }
+    );
+    return response.data.accessToken;
+}
+
+// Setup the API client to handle the access token -----------------------------
+
 const bearerAuthorization = (token: string) => `Bearer ${token}`;
 
 // Intercept requests to attach access token
 apiClient.interceptors.request.use(
     (config) => {
-        const token = getAccessToken();
+        const token = getAPIAccessToken();
         if (token && config.headers) {
             config.headers.Authorization = bearerAuthorization(token);
         }
@@ -60,7 +88,6 @@ const processQueue = (
 };
 
 const STATUS_UNAUTHORIZED = 401;
-const METHOD_REFRESH = 'users/refresh-access';
 
 apiClient.interceptors.response.use(
     (response) => response,
@@ -95,15 +122,8 @@ apiClient.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                // Call the refresh endpoint directly with axios to avoid
-                // interceptor loops
-                const response = await axios.post<AccessTokenDto>(
-                    `${API_URL}/${METHOD_REFRESH}`,
-                    {},
-                    { withCredentials: true }
-                );
-                const accessToken = response.data.accessToken;
-                setAccessToken(response.data.accessToken);
+                const accessToken = await refreshAPIAccess();
+                setAPIAccessToken(accessToken);
 
                 if (originalRequest.headers) {
                     originalRequest.headers.Authorization
@@ -114,7 +134,7 @@ apiClient.interceptors.response.use(
             }
             catch (refreshError) {
                 processQueue(refreshError as AxiosError, null);
-                setAccessToken(null);
+                setAPIAccessToken(null);
                 return rejectAPIError(refreshError);
             }
             finally {
@@ -126,12 +146,3 @@ apiClient.interceptors.response.use(
         }
     }
 );
-
-/**
- * Include this in the parameters to a call on `apiClient` to have it skip token
- * refreshing.
- */
-export const apiSkipAuthRefresh:
-    AxiosRequestConfig & { _skipAuthRefresh?: boolean } = {
-    _skipAuthRefresh: true
-};
