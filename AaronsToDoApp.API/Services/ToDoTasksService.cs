@@ -57,7 +57,7 @@ public class ToDoTasksService(AppDbContext database)
             UserId = userId,
             Name = taskRequest.Name,
             Description = taskRequest.Description,
-            DeadlineUTC = taskRequest.DeadlineUTC,
+            DeadlineUTC = taskRequest.DeadlineUTC?.UtcDateTime,
             CreatedUTC = DateTime.UtcNow
         };
 
@@ -80,8 +80,8 @@ public class ToDoTasksService(AppDbContext database)
 
         task.Name = taskRequest.Name;
         task.Description = taskRequest.Description;
-        task.DeadlineUTC = taskRequest.DeadlineUTC;
-        task.CompletedUTC = taskRequest.CompletedUTC;
+        task.DeadlineUTC = taskRequest.DeadlineUTC?.UtcDateTime;
+        task.CompletedUTC = taskRequest.CompletedUTC?.UtcDateTime;
 
         await database.SaveChangesAsync();
 

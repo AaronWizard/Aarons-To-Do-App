@@ -12,9 +12,9 @@ public record PagedDto<T>(
 public record ToDoTaskDto(
     int Id,
     string Name,
-    DateTime CreatedUTC,
-    DateTime? CompletedUTC,
-    DateTime? DeadlineUTC,
+    DateTimeOffset CreatedUTC,
+    DateTimeOffset? CompletedUTC,
+    DateTimeOffset? DeadlineUTC,
     string? Description
 );
 
@@ -27,7 +27,7 @@ public record CreateToDoTaskRequestDto
     [MaxLength(1000)]
     public string? Description { get; init; }
 
-    public DateTime? DeadlineUTC { get; init; }
+    public DateTimeOffset? DeadlineUTC { get; init; }
 }
 
 public record UpdateToDoTaskRequest
@@ -39,7 +39,7 @@ public record UpdateToDoTaskRequest
     [MaxLength(1000)]
     public string? Description { get; init; }
 
-    public DateTime? DeadlineUTC { get; init; }
+    public DateTimeOffset? DeadlineUTC { get; init; }
 
-    public DateTime? CompletedUTC { get; init; }
+    public DateTimeOffset? CompletedUTC { get; init; }
 }
