@@ -36,7 +36,8 @@ JWT tokens are paired with rotating refresh tokens. Users have one active refres
 
 #### Front-end
 
-- [MUI](https://mui.com/): Base UI and theming.
+- [Vite](https://vite.dev/): Base project tooling.
+- [MUI](https://mui.com/): Standard UI components and theming.
 - [TanStack Query](https://tanstack.com/query/latest): Tracking server state when using the API.
 - [Axios](https://axios.rest/): REST API interactions.
 
