@@ -53,9 +53,9 @@ The project uses a [dev container](https://containers.dev/) to provide a replica
 
 Visual Studio Code launch configurations are provided to run the app in dev mode:
 
+- `Full Stack Debug`: Starts both the API and the front-end application.
 - `Debug API`: Starts the API application. Opens a Scalar page to interact with the API at the URL `http://localhost:5248/scalar`.
 - `Debug Front End`: Starts the front-end application. Opens the app in Chrome at the URL `http://localhost:5173/`; other browsers may access this URL but Chrome is required for debugging in VS Code.
-- `Full Stack Debug`: Starts both the API and the front-end application.
 
 #### Reminders
 
