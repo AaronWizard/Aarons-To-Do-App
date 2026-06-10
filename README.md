@@ -26,6 +26,8 @@ Data: SQLite
 
 ### Editing and Running
 
+The project was built using .NET SDK v10.0.3 and Node.js v24.16.
+
 The following tools were used to develop and run the project:
 
 - [Visual Studio Code](https://code.visualstudio.com/)
@@ -43,6 +45,12 @@ Visual Studio Code launch configurations are provided to run the app in dev mode
     - A Scalar interface is available at `http://localhost:5248/scalar`.
 - `Debug API`: Starts only the API application.
 - `Debug Front End`: Starts only the front-end application, opening Chrome at the front-end URL.
+
+As an alternative to running the application through VS Code's Run and Debug, the script `run_debug.sh` starts the API and front-end app. \
+Opening the app at `http://localhost:5173/` manually is necessary when starting it with the script.
+
+Building the API and front-end is accomplished using the script `.devcontainer/setup.sh`. \
+This script is run when the dev container is first created.
 
 ### API
 
