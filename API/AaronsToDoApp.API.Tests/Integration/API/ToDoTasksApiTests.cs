@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Json;
 using AaronsToDoApp.API.Data;
 using AaronsToDoApp.API.DTOs;
@@ -10,7 +11,7 @@ namespace AaronsToDoApp.API.Tests.Integration.API;
 public class ToDoTasksApiTests : IAsyncLifetime
 {
     private APIIntegrationTestFactory _factory = null!;
-    private HttpClient _client;
+    private HttpClient _client = null!;
 
     private const string UserEmail = "test@example.com";
     private const string UserPassword = "Password1!";
@@ -41,7 +42,7 @@ public class ToDoTasksApiTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task CreateToDoTask_ReturnsOk()
+    public async Task CreateToDoTask_ValidTask_Succeeds()
     {
         using var scope = _factory.Services.CreateScope();
         var database = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -58,7 +59,8 @@ public class ToDoTasksApiTests : IAsyncLifetime
         var response = await _client.PostAsJsonAsync(
             ToDoTaskEndpoint, createTaskDto
         );
-        response.EnsureSuccessStatusCode();
+
+        Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
         var resultTaskDto = await response.Content
             .ReadFromJsonAsync<ToDoTaskDto>();
@@ -73,5 +75,30 @@ public class ToDoTasksApiTests : IAsyncLifetime
         Assert.Equal(resultTaskDto.Name, resultTaskDto.Name);
         Assert.Equal(resultTaskDto.Description, resultTaskDto.Description);
         Assert.Equal(resultTaskDto.DeadlineUTC, resultTaskDto.DeadlineUTC);
+    }
+
+    [Fact]
+    public async Task CreateToDoTask_InvalidTask_Fails()
+    {
+        using var scope = _factory.Services.CreateScope();
+        var database = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+        var taskInDB = await database.ToDoTasks.FirstOrDefaultAsync();
+        Assert.Null(taskInDB);
+
+        var createTaskDto = new CreateToDoTaskRequestDto
+        {
+            Name = string.Empty,
+            Description = "A test task"
+        };
+
+        var response = await _client.PostAsJsonAsync(
+            ToDoTaskEndpoint, createTaskDto
+        );
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+        taskInDB = await database.ToDoTasks.FirstOrDefaultAsync();
+        Assert.Null(taskInDB);
     }
 }
