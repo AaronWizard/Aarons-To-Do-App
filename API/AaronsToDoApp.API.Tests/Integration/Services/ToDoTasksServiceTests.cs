@@ -43,10 +43,13 @@ public class ToDoTasksServiceTests : IntegrationTestBase
     public ToDoTasksServiceTests()
     {
         // Seed test data
-        AddUserToDbContext(UserA.userId, UserA.userEmail);
+
+        IntegrationTestHelpers.AddUserToDbContext(
+            DbContext, UserA.userId, UserA.userEmail);
         DbContext.ToDoTasks.AddRange(UserA.tasks);
 
-        AddUserToDbContext(UserB.userId, UserB.userEmail);
+        IntegrationTestHelpers.AddUserToDbContext(
+            DbContext, UserB.userId, UserB.userEmail);
         DbContext.ToDoTasks.AddRange(UserB.tasks);
 
         DbContext.SaveChanges();
