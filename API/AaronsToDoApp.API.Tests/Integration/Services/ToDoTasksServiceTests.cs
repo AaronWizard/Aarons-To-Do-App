@@ -68,14 +68,15 @@ public class ToDoTasksServiceTests : IntegrationTestBase
             UserA.userId, page, pageSize
         );
 
-        // Should only see tasks belonging to user A.
-        // Should not see tasks belonging to user B.
-
         Assert.Equal(UserA.tasks.Count(), taskPage.Items.Count());
+
+        // Should only see tasks belonging to user A.
         Assert.All(
             taskPage.Items,
             task => Assert.Single(UserA.tasks, ta => ta.Id == task.Id)
         );
+
+        // Should not see tasks belonging to user B.
         Assert.All(
             taskPage.Items,
             task => Assert.DoesNotContain(UserB.tasks, tb => tb.Id == task.Id)
