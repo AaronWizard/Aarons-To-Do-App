@@ -15,7 +15,7 @@
             "name": "Debug API",
             "type": "dotnet",
             "request": "launch",
-            "projectPath": "${workspaceFolder}/AaronsToDoApp.API/AaronsToDoApp.API.csproj",
+            "projectPath": "${workspaceFolder}/API/AaronsToDoApp.API/AaronsToDoApp.API.csproj",
             "launchConfigurationId": "TargetFramework=;http",
             "serverReadyAction": {
                 "action": "openExternally",

@@ -63,8 +63,8 @@ When updating the model, migrate and update the database with the following comm
 
 ```bash
 # From workspace root
-dotnet ef migrations add [Migration name] --project AaronsToDoApp.API
-dotnet ef database update --project AaronsToDoApp.API
+dotnet ef migrations add [Migration name] --project API/AaronsToDoApp.API
+dotnet ef database update --project API/AaronsToDoApp.API
 ```
 
 The API already has a migration, and the `dotnet ef database update` command is run automatically when the dev container is created.
