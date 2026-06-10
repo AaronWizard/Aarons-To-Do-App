@@ -1,6 +1,10 @@
+import { useState } from 'react';
+import { useMutation } from '@tanstack/react-query';
+
 import {
     Box,
     Card,
+    CircularProgress,
     IconButton,
     Tooltip,
     Typography
@@ -11,11 +15,8 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { useState } from 'react';
-
-import type { ToDoTaskDto, UpdateTaskRequestDto }
-    from '../../../api/types';
 import { tasksService } from '../../../services/task_service';
+import type { ToDoTaskDto, UpdateTaskRequestDto } from '../../../api/types';
 import { formatDateString } from '../../../utils/dates';
 
 import styles from './TaskItem.module.scss';
@@ -33,52 +34,49 @@ function isOverdue(task: ToDoTaskDto): boolean {
     if (task.completedUTC !== null) {
         return false;
     }
-    else if (task.deadlineUTC !== null) {
+    if (task.deadlineUTC !== null) {
         const deadlineDate = new Date(task.deadlineUTC);
         return deadlineDate < new Date();
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 export default function TaskItem({ task, onUpdated }: TaskItemProps) {
-    const [isToggling, setIsToggling] = useState(false);
-
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
-
     const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
-    const [isDeleting, setIsDeleting] = useState(false);
 
     const overdue = isOverdue(task);
     const completed = task.completedUTC !== null;
 
-    async function handleToggleComplete(): Promise<void> {
-        setIsToggling(true);
-        try {
-            const data: UpdateTaskRequestDto = {
-                name: task.name,
-                completedUTC: completed ? null : new Date().toISOString(),
-                deadlineUTC: task.deadlineUTC,
-                description: task.description,
-            };
-            await tasksService.updateTask(task.id, data);
+    const toggleMutation = useMutation({
+        mutationFn: (data: UpdateTaskRequestDto) =>
+            tasksService.updateTask(task.id, data),
+        onSuccess: () => {
             onUpdated();
-        } finally {
-            setIsToggling(false);
-        }
+        },
+    });
+
+    const deleteMutation = useMutation({
+        mutationFn: () => tasksService.deleteTask(task.id),
+        onSuccess: () => {
+            onUpdated();
+        },
+    });
+
+    function handleToggle(): void {
+        const data: UpdateTaskRequestDto = {
+            name: task.name,
+            completedUTC: completed ? null : new Date().toISOString(),
+            deadlineUTC: task.deadlineUTC,
+            description: task.description,
+        };
+        toggleMutation.mutate(data);
     }
 
-    async function handleDelete(): Promise<void> {
-        setIsDeleting(true);
-        try {
-            await tasksService.deleteTask(task.id);
-            setIsDeleteConfirmOpen(false);
-            onUpdated();
-        } finally {
-            setIsDeleting(false);
-        }
+    function handleDelete(): void {
+        setIsDeleteConfirmOpen(false);
+        deleteMutation.mutate();
     }
 
     return (
@@ -117,51 +115,80 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
                 <Box sx={{
                     display: 'flex', alignItems: 'center', pr: 1, gap: 0.25
                 }}>
-                    <Tooltip
-                        title={completed ? 'Mark incomplete' : 'Mark complete'}
-                    >
-                        <span>
-                            <IconButton
-                                size="small"
-                                color={completed ? 'default' : 'success'}
-                                onClick={handleToggleComplete}
-                                disabled={isToggling}
-                                aria-label={completed ?
+                    {/* Complete toggle button */}
+                    {
+                        toggleMutation.isPending ?
+                            <Box sx={{ p: 0.5, display: 'flex' }}>
+                                <CircularProgress size={20} />
+                            </Box>
+                            :
+                            <Tooltip
+                                title={completed ?
                                     'Mark incomplete' : 'Mark complete'
                                 }
                             >
-                                {
-                                    completed ?
-                                        <CheckBoxIcon
-                                            fontSize="small" color="success"
-                                        />
-                                        : <CheckBoxOutlineBlankIcon />
-                                }
-                            </IconButton>
-                        </span>
-                    </Tooltip>
+                                <IconButton
+                                    size="small"
+                                    color={completed ? 'default' : 'success'}
+                                    onClick={handleToggle}
+                                    disabled={
+                                        toggleMutation.isPending
+                                        || deleteMutation.isPending
+                                    }
+                                    aria-label={
+                                        completed ?
+                                            'Mark incomplete' : 'Mark complete'
+                                    }
+                                >
+                                    {
+                                        completed ?
+                                            <CheckBoxIcon
+                                                fontSize="small" color="success"
+                                            />
+                                            : <CheckBoxOutlineBlankIcon />
+                                    }
+                                </IconButton>
+                            </Tooltip>
+                    }
 
+                    {/* Edit button */}
                     <Tooltip title="Edit">
                         <IconButton
                             size="small"
                             color="primary"
-                            aria-label="Edit task"
                             onClick={() => setIsEditOpen(true)}
+                            disabled={
+                                toggleMutation.isPending
+                                || deleteMutation.isPending
+                            }
+                            aria-label="Edit task"
                         >
                             <EditIcon />
                         </IconButton>
                     </Tooltip>
 
-                    <Tooltip title="Delete">
-                        <IconButton
-                            size="small"
-                            color="error"
-                            onClick={() => setIsDeleteConfirmOpen(true)}
-                            aria-label="Delete task"
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    </Tooltip>
+                    {/* Delete button */}
+                    {
+                        deleteMutation.isPending ?
+                            <Box sx={{ p: 0.5, display: 'flex' }}>
+                                <CircularProgress size={20} color="error" />
+                            </Box>
+                            :
+                            <Tooltip title="Delete">
+                                <IconButton
+                                    size="small"
+                                    color="error"
+                                    onClick={() => setIsDeleteConfirmOpen(true)}
+                                    disabled={
+                                        toggleMutation.isPending
+                                        || deleteMutation.isPending
+                                    }
+                                    aria-label="Delete task"
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                    }
                 </Box>
             </Card>
 
@@ -184,7 +211,7 @@ export default function TaskItem({ task, onUpdated }: TaskItemProps) {
             <ConfirmDeleteTask
                 isDeleteConfirmOpen={isDeleteConfirmOpen}
                 taskName={task.name}
-                isDeleting={isDeleting}
+                isDeleting={deleteMutation.isPending}
                 closeConfirm={() => setIsDeleteConfirmOpen(false)}
                 handleDelete={handleDelete}
             />

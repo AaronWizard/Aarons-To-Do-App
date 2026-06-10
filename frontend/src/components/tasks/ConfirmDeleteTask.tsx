@@ -30,7 +30,9 @@ export default function ConfirmDeleteTask({
                 >
                     Cancel
                 </Button>
-                <Button color="error" onClick={handleDelete} disabled={isDeleting}>
+                <Button
+                    color="error" onClick={handleDelete} disabled={isDeleting}
+                >
                     Delete
                 </Button>
             </DialogActions>
