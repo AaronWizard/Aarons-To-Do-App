@@ -42,7 +42,10 @@ export const refreshAPIAccess = async (): Promise<string> => {
     const response = await axios.post<AccessTokenDto>(
         `${API_URL}/${METHOD_REFRESH}`,
         {},
-        { withCredentials: true }
+        {
+            withCredentials: true,
+            timeout: TIMEOUT_MS
+        }
     );
     return response.data.accessToken;
 }
