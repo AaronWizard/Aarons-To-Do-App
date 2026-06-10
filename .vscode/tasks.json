@@ -2,10 +2,10 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Run AaronsToDoApp.FrontEnd",
+			"label": "Run frontend",
 			"type": "npm",
 			"script": "dev",
-			"path": "AaronsToDoApp.FrontEnd",
+			"path": "frontend",
 			"problemMatcher": [
 				{
 					"pattern": [
@@ -42,7 +42,7 @@
 			"id": "terminateVite",
 			"type": "command",
 			"command": "workbench.action.tasks.terminate",
-			"args": "Run AaronsToDoApp.FrontEnd"
+			"args": "Run frontend"
 		}
 	]
 }

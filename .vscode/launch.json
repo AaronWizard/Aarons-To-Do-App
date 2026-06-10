@@ -7,8 +7,8 @@
             "request": "launch",
             "type": "chrome",
             "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/AaronsToDoApp.FrontEnd",
-            "preLaunchTask": "Run AaronsToDoApp.FrontEnd",
+            "webRoot": "${workspaceFolder}/frontend",
+            "preLaunchTask": "Run frontend",
             "postDebugTask": "Stop Front End Vite Server"
         },
         {
