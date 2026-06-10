@@ -3,15 +3,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Front End",
-            "request": "launch",
-            "type": "chrome",
-            "url": "http://localhost:5173",
-            "webRoot": "${workspaceFolder}/frontend",
-            "preLaunchTask": "Run frontend",
-            "postDebugTask": "Stop Front End Vite Server"
-        },
-        {
             "name": "Debug API",
             "type": "dotnet",
             "request": "launch",
@@ -22,15 +13,27 @@
                 "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
                 "uriFormat": "%s/scalar"
             }
-        }
-    ],
-    "compounds": [
+        },
+        {
+            "name": "Debug Front End",
+            "request": "launch",
+            "type": "chrome",
+            "url": "http://localhost:5173",
+            "webRoot": "${workspaceFolder}/frontend",
+            "preLaunchTask": "Run frontend",
+            "postDebugTask": "Stop Front End Vite Server"
+        },
         {
             "name": "Full Stack Debug",
-            "configurations": [
-                "Debug API",
-                "Debug Front End"
-            ]
-        }
+            "type": "dotnet",
+            "request": "launch",
+            "projectPath": "${workspaceFolder}/API/AaronsToDoApp.API/AaronsToDoApp.API.csproj",
+            "launchConfigurationId": "TargetFramework=;http",
+            "serverReadyAction": {
+                "action": "startDebugging",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "name": "Debug Front End"
+            }
+        },
     ]
 }
